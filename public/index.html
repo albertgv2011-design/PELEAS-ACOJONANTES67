@@ -170,15 +170,19 @@ body.in-fight #fight3d-fallback{inset:0}
  const face=new T.Mesh(new T.BoxGeometry(.68,.78,.52),skin);face.castShadow=true;head.add(face);
  const haircap=new T.Mesh(new T.BoxGeometry(.78,.5,.7),hair);haircap.scale.set(.85,1.15,.8);haircap.position.y=.20;haircap.castShadow=true;head.add(haircap);
  const nose=cube(head,0,-.02,.31,.12,.15,.14,skin);
- for(let side of [-1,1]){cube(head,side*.14,.055,.285,.085,.055,.035,mat(0x17131a));}
+ // Blocky ears and brows make the face readable at fighting-camera distance.
+ for(let side of [-1,1]){cube(head,side*.345,-.015,.015,.10,.20,.16,skin);cube(head,side*.14,.135,.292,.105,.045,.045,mat(id==='abascal'?0x302923:0x211b20));cube(head,side*.14,.055,.285,.085,.055,.035,mat(0x17131a));}
  // POLITICIAN SKINS: recognizable hair, beard and glasses on the existing head;
  // the original torso, limbs, pivots and combat animation rig remain unchanged.
  const oval=(parent,x,y,z,sx,sy,sz,color)=>{const m=new T.Mesh(new T.BoxGeometry(1,1,1),mat(color));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;parent.add(m);return m;};
  const beardColor=(id==='puigdemont')?0x898984:(id==='abascal')?0x302923:(id==='rufian')?0x3b302a:0x6d625b;
  if(id==='puigdemont'){
-   haircap.material=mat(0xb8b8b0);haircap.scale.set(1.02,1.05,.9);haircap.position.set(-.035,.11,-.015);
-   oval(head,-.19,.14,-.015,.22,.12,.22,0xc2c2ba);oval(head,.12,.17,-.025,.28,.12,.22,0xc2c2ba);
-   oval(head,0,-.22,.22,.27,.24,.18,beardColor);oval(head,-.19,-.10,.20,.10,.18,.12,beardColor);oval(head,.19,-.10,.20,.10,.18,.12,beardColor);
+   // Dark swept hair, clean-shaven face, and unmistakable square glasses.
+   haircap.material=mat(0x292321);haircap.scale.set(1.02,.92,.92);haircap.position.set(-.035,.16,-.015);
+   oval(head,-.28,.02,-.015,.15,.19,.34,0x292321);oval(head,.27,.02,-.015,.15,.19,.34,0x292321);
+   const frames=mat(0x171719,.25,.18);
+   for(const side of [-1,1]){const lens=cube(head,side*.145,.055,.325,.22,.17,.035,frames);lens.position.z=.325;}
+   cube(head,0,.055,.345,.08,.035,.035,frames);
  }else if(id==='abascal'){
    // Bald scalp and prominent dark full beard.
    haircap.scale.set(.84,.58,.78);haircap.position.y=.13;
@@ -190,8 +194,9 @@ body.in-fight #fight3d-fallback{inset:0}
    for(const side of [-1,1]){const lens=new T.Mesh(new T.TorusGeometry(.105,.018,6,18),glasses);lens.position.set(side*.13,.055,.34);head.add(lens);}
    cube(head,0,.055,.345,.09,.022,.025,glasses);
  }else if(id==='sanchez'){
-   haircap.scale.set(.88,.82,.8);
-   oval(head,0,-.23,.22,.27,.20,.17,0x77716b);oval(head,-.18,-.10,.20,.09,.14,.11,0x77716b);oval(head,.18,-.10,.20,.09,.14,.11,0x77716b);
+   // Short dark hair and clean-shaven face.
+   haircap.material=mat(0x28252b);haircap.scale.set(.94,.88,.86);haircap.position.set(0,.18,-.015);
+   oval(head,-.25,.13,-.015,.12,.10,.24,0x28252b);oval(head,.25,.13,-.015,.12,.10,.24,0x28252b);
  }else if(id==='orriols'){
    haircap.scale.set(.98,1.12,.88);
    oval(head,-.29,-.13,.02,.12,.48,.15,0x211b20);oval(head,.29,-.13,.02,.12,.48,.15,0x211b20);
