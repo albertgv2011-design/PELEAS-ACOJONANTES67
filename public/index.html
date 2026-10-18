@@ -82,7 +82,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  cape(body,colors.cape||0x9b1b2d,kind);
  // Stand with a readable fighting pose.
  arms[0].rotation.z=-.42;arms[0].rotation.x=-.5;arms[1].rotation.z=.55;arms[1].rotation.x=-.7;
- root.userData={body,head,arms,legs,kind,id,baseX:x,phase:Math.random()*5,attackUntil:0,blockUntil:0};return root;}
+ root.userData={body,head,arms,legs,kind,id,baseX:x,phase:Math.random()*5,attackUntil:0,blockUntil:0,duckUntil:0,hitUntil:0,dead:false,celebrate:false};return root;}
  const fighters={
  sanchez:humanoid('sanchez',3.2,{skin:0xc58c6b,suit:0x18253c,tie:0x582c43,hair:0x28252b,cape:0xb30e2d},'morocco'),
  abascal:humanoid('abascal',3.2,{skin:0xc58c6b,suit:0x29372e,tie:0x45392b,hair:0x302722,cape:0x9d1b24},'spain'),
@@ -95,7 +95,15 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  function resize(){const w=stage.clientWidth||800,h=stage.clientHeight||500;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
  new ResizeObserver(resize).observe(stage);resize();
  let last=0;
- function animate(t){requestAnimationFrame(animate);const dt=Math.min(.04,(t-last)/1000||0);last=t;for(const f of Object.values(fighters)){const u=f.userData;u.phase+=dt*3;u.body.position.y=Math.abs(Math.sin(u.phase))*.025;u.legs.forEach((l,i)=>{l.rotation.x=Math.sin(u.phase+(i*Math.PI))*.04;});if(t<u.attackUntil){u.arms[1].rotation.x=-1.8;u.arms[1].rotation.z=-.8;}else{u.arms[0].rotation.x=-.5+Math.sin(u.phase)*.05;u.arms[1].rotation.x=-.7+Math.sin(u.phase+1)*.05;}if(t<u.blockUntil){u.arms[0].rotation.x=-1.8;u.arms[1].rotation.x=-1.8;}}renderer.render(scene,camera);}
+ function animate(t){requestAnimationFrame(animate);const dt=Math.min(.04,(t-last)/1000||0);last=t;
+ for(const f of Object.values(fighters)){const u=f.userData;u.phase+=dt*3;
+ if(u.dead){u.body.rotation.z=Math.sin(u.phase)*.025;u.body.position.y=-.48;u.body.rotation.x=.02;u.legs.forEach((l,i)=>{l.rotation.x=i===0?-.1:1.15;l.rotation.z=i===0?-.1:.2;});u.arms.forEach((a,i)=>{a.rotation.x=i===0?-.1:.1;a.rotation.z=i===0?-.8:.8;});continue;}
+ u.body.position.y=Math.abs(Math.sin(u.phase))*.025;u.body.rotation.z=0;u.body.rotation.x=0;
+ if(t<u.duckUntil){u.body.position.y=-.42;u.body.rotation.x=.25;u.head.rotation.x=.15;u.legs.forEach((l,i)=>{l.rotation.x=.85;});}
+ else if(t<u.jumpUntil){u.body.position.y=.95;u.legs.forEach((l,i)=>{l.rotation.x=i===0?-.8:.65;});}
+ else if(t<u.celebrateUntil){u.body.position.y=Math.abs(Math.sin(u.phase*3))*.42;u.body.rotation.z=Math.sin(u.phase*3)*.25;u.arms.forEach((a,i)=>{a.rotation.z=(i===0?-1:1)*(.8+Math.sin(u.phase*3)*.3);a.rotation.x=-1.4;});u.legs.forEach((l,i)=>{l.rotation.x=Math.sin(u.phase*3+i*Math.PI)*.8;});}
+ else {u.head.rotation.x=0;u.legs.forEach((l,i)=>{l.rotation.x=t<u.moveUntil?Math.sin(u.phase*3+(i*Math.PI))*.65:Math.sin(u.phase)*.025;});u.arms.forEach((a,i)=>{if(t<u.attackUntil){a.rotation.x=-1.8;a.rotation.z=i===0?-.7:.7;}else if(t<u.blockUntil){a.rotation.x=-1.8;a.rotation.z=i===0?-.8:.8;}else{a.rotation.x=-.5+Math.sin(u.phase+ i)*.08;a.rotation.z=i===0?-.42:.55;}});}
+ }renderer.render(scene,camera);}
  requestAnimationFrame(animate);
  function chosenId(i){const n=document.getElementById('name'+i)?.textContent||'';return Object.keys(fighters).find(k=>({sanchez:'Pedro Sánchez',abascal:'Santiago Abascal',rufian:'Gabriel Rufián',puigdemont:'Puigdemont',orriols:'Sílvia Orriols'}[k])===n)|| (i===0?'puigdemont':'sanchez');}
  function updateFighter(i){const id=chosenId(i);if(!window.__pa3dSelected)window.__pa3dSelected=[null,null];const prev=window.__pa3dSelected[i];if(prev)prev.visible=false;const f=fighters[id]||fighters.puigdemont;f.visible=true;f.position.x=i===0?-3.2:3.2;f.rotation.y=i===0?.25:-.25;f.userData.baseX=f.position.x;f.scale.setScalar(1.12);window.__pa3dSelected[i]=f;return f;}
@@ -103,11 +111,31 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  // Server events already drive the match; add physical animation to those events without replacing existing UI logic.
  const feed=document.getElementById('feed');const oldText=feed?feed.textContent:'';
  const origFeed=window.__pa3dFeed;
- window.addEventListener('keydown',e=>{if(!document.body.classList.contains('in-fight'))return;const f=active[0];if(e.key.toLowerCase()==='j'){f.userData.attackUntil=performance.now()+240;}if(e.key.toLowerCase()==='k'){f.userData.attackUntil=performance.now()+480;}if(e.key==='Shift'){f.userData.blockUntil=performance.now()+800;}});
+ const keyDowns=new Set();
+ window.addEventListener('keydown',e=>{if(!document.body.classList.contains('in-fight'))return;const f=active[0];if(!f)return;const u=f.userData,k=e.key.toLowerCase();if(keyDowns.has(k))return;keyDowns.add(k);const now=performance.now();
+ if(k==='a'||k==='d'){u.moveUntil=now+10000;u.moveDir=k==='a'?-1:1;f.position.x=Math.max(-7,Math.min(7,f.position.x+u.moveDir*.45));}
+ if(k==='s'){u.duckUntil=now+650;}
+ if(k==='w'){u.jumpUntil=now+520;}
+ if(k==='j'){u.attackUntil=now+340;}
+ if(k==='k'){u.attackUntil=now+650;}
+ if(k==='shift'){u.blockUntil=now+1000;}
+ });
+ window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();keyDowns.delete(k);if(!document.body.classList.contains('in-fight'))return;const f=active[0];if(f&&(k==='a'||k==='d'))f.userData.moveUntil=0;});
  const originalRenderChars=window.renderChars;
  // Existing game defines renderChars locally; observe HUD name changes and switch 3D fighters.
  const observer=new MutationObserver(()=>{active=[updateFighter(0),updateFighter(1)];});
  ['name0','name1'].forEach(id=>observer.observe(document.getElementById(id),{childList:true,characterData:true,subtree:true}));
+
+ // Connect server combat messages to 3D hit reactions, KO pose and winner celebration.
+ const _wsDescriptor=Object.getOwnPropertyDescriptor(window,'ws');
+ function watchSocket(){
+   const check=setInterval(()=>{try{if(typeof ws!=='undefined'&&ws&&ws!==window.__pa3dWatched){window.__pa3dWatched=ws;const sock=ws;const old=sock.onmessage;sock.onmessage=function(ev){if(old)old.call(this,ev);try{const m=JSON.parse(ev.data);if(m.type==='combat-event'){const f=active[m.player];if(f){const u=f.userData,now=performance.now();if(m.action==='attack'||m.action==='rare'){u.attackUntil=now+(m.action==='rare'?650:340);const victim=active[1-m.player];if(victim){victim.userData.hitUntil=now+260;victim.rotation.z=(m.player===0?-.16:.16);setTimeout(()=>{if(!victim.userData.dead)victim.rotation.z=0;},280);}}if(m.action==='jump')u.jumpUntil=now+520;if(m.action==='crouch')u.duckUntil=now+650;if(m.action==='move-left'||m.action==='move-right'){u.moveUntil=now+250;u.moveDir=m.action==='move-left'?-1:1;f.position.x=Math.max(-7,Math.min(7,f.position.x+u.moveDir*.45));}if(m.action==='block')u.blockUntil=now+800;}}
+ if(m.type==='fight-over'){active.forEach((f,i)=>{if(!f)return;f.userData.dead=i!==m.winner;f.userData.celebrateUntil=i===m.winner?performance.now()+100000:0;if(i===m.winner){f.userData.dead=false;f.userData.celebrate=true;}});}
+ if(m.type==='fight-start'){active.forEach(f=>{if(f){f.userData.dead=false;f.userData.celebrate=false;f.userData.celebrateUntil=0;f.userData.duckUntil=0;f.userData.jumpUntil=0;f.userData.moveUntil=0;f.position.y=0;f.rotation.z=0;}});}
+ }catch(err){}};clearInterval(check);}}catch(e){}},250);
+ }
+ watchSocket();
+
  // Decorative portal effect when Puigdemont uses rare ability.
  window.addEventListener('keydown',e=>{if(document.body.classList.contains('in-fight')&&e.key.toLowerCase()==='k'&&chosenId(0)==='puigdemont'){rim.intensity=75;setTimeout(()=>rim.intensity=35,600);}});
 })();
