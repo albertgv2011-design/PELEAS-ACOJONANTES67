@@ -17,7 +17,7 @@ body.in-fight .brand,body.in-fight .sub,body.in-fight #lobby,body.in-fight foote
 <option value="orriols">⭐ Sílvia Orriols — Defensa de l’estelada</option>
 </select></div><div class="row"><button id="create">Crear sala privada</button><input id="roomCode" maxlength="8" placeholder="CODI DE SALA"><button id="join" class="secondary">Unir-me</button></div><p class="small">Comparteix el codi amb un amic. Necessiteu una adreça de servidor públic per jugar des de fora de la xarxa local.</p><div id="roomInfo" class="status"></div></section><section id="game" class="panel hidden">
 <div class="fight-top"><div class="combatant"><span id="portrait0">⭐</span><div><b id="name0">Puigdemont</b><div class="health"><span id="hp0"></span></div><small><span id="hp0text">100</span>% VIDA</small></div></div><div class="timer" id="roundState">00</div><div class="combatant right"><div><b id="name1">Pedro Sánchez</b><div class="health right"><span id="hp1"></span></div><small><span id="hp1text">100</span>% VIDA</small></div><span id="portrait1">🇲🇦</span></div></div>
-<div class="congress-stage"><div class="congress-sign">CONGRÉS DELS DIPUTATS</div><div class="floor"></div><div id="avatar0" class="avatar fighter-left">⭐</div><div id="avatar1" class="avatar fighter-right">🇲🇦</div><div id="feed" class="fight-feed">Connecta un segon jugador per començar.</div></div>
+<div class="congress-stage"><canvas id="fight3d" aria-label="Escena 3D de combat"></canvas><div class="congress-sign">CONGRÉS DELS DIPUTATS</div><div class="floor"></div><div id="avatar0" class="avatar fighter-left">⭐</div><div id="avatar1" class="avatar fighter-right">🇲🇦</div><div id="feed" class="fight-feed">Connecta un segon jugador per començar.</div></div>
 <div class="fight-bottom"><div class="controls-hint"><b>CONTROLS</b><span><kbd>W</kbd> Saltar</span><span><kbd>A</kbd> Esquerra</span><span><kbd>S</kbd> Ajupir-se</span><span><kbd>D</kbd> Dreta</span><span><kbd>J</kbd> Atac bàsic</span><span><kbd>K</kbd> Habilitat rara</span><span><kbd>Shift</kbd> Bloqueig</span></div><div class="ability-box"><b>👊 ATAC BÀSIC · J</b><p>Cop ràpid</p><b>🌟 HABILITAT RARA · K</b><p id="rareStatus">Es carrega encertant 8 cops.</p><div class="chargebar"><span id="charge0"></span></div><button id="rareButton" data-action="rare" disabled>Activar habilitat rara</button><div class="button-row"><button class="secondary" data-action="block">🛡️ Bloqueig</button><button class="secondary" id="exitFight">⬅️ Menú</button><button id="rematch" class="secondary hidden">REVANJA</button></div></div></div>
 <button id="start" class="hidden" disabled>⚔️ INICIAR LLUITA</button>
 </section><footer>PELEAS ACOJONANTES · Prototip inicial · Fes servir només personatges i imatges que tinguis dret a distribuir.</footer></main><script>
@@ -36,4 +36,79 @@ $('create').onclick=()=>{if(!connected)return connect();send({type:'create-room'
 function beginMove(action){send({type:'action',action});}
 document.addEventListener('keydown',e=>{if(!document.body.classList.contains('in-fight')||['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;const k=e.key.toLowerCase();if(['w','a','s','d','j','k','shift'].includes(k))e.preventDefault();if((k==='a'||k==='d')&&!held.has(k)){held.add(k);beginMove(k==='a'?'move-left':'move-right');if(!moveTimer)moveTimer=setInterval(()=>{if(held.has('a'))beginMove('move-left');if(held.has('d'))beginMove('move-right')},110);return}if(e.repeat)return;if(k==='shift'){send({type:'action',action:'block',active:true});$('avatar'+playerIndex).classList.add('blocking');return}const keys={w:'jump',s:'crouch',j:'attack',k:'rare'};if(keys[k])send({type:'action',action:keys[k]})});
 document.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k==='a'||k==='d'){held.delete(k);if(!held.has('a')&&!held.has('d')&&moveTimer){clearInterval(moveTimer);moveTimer=null}}if(k==='shift'){send({type:'action',action:'block',active:false});$('avatar'+playerIndex).classList.remove('blocking')}});
-$('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>{const action=b.dataset.action;if(action==='rare'&&$('rareButton').disabled)return;if(action==='block'){$('avatar'+playerIndex).classList.toggle('blocking');send({type:'action',action:'block',active:$('avatar'+playerIndex).classList.contains('blocking')});return}send({type:'action',action})});renderChars(['puigdemont','sanchez']);updateCharge([0,0]);</script></body></html>
+$('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>{const action=b.dataset.action;if(action==='rare'&&$('rareButton').disabled)return;if(action==='block'){$('avatar'+playerIndex).classList.toggle('blocking');send({type:'action',action:'block',active:$('avatar'+playerIndex).classList.contains('blocking')});return}send({type:'action',action})});renderChars(['puigdemont','sanchez']);updateCharge([0,0]);</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+(function(){
+ if(!window.THREE) { const c=document.getElementById('fight3d'); if(c){c.style.background='linear-gradient(#241a19,#63432e,#2b1720)';} return; }
+ const canvas=document.getElementById('fight3d'), stage=canvas.parentElement, T=window.THREE;
+ const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:true});
+ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2)); renderer.shadowMap.enabled=true; renderer.shadowMap.type=T.PCFSoftShadowMap;
+ renderer.outputColorSpace=T.SRGBColorSpace;
+ const scene=new T.Scene(); scene.background=new T.Color(0x21151a); scene.fog=new T.Fog(0x21151a,18,42);
+ const camera=new T.PerspectiveCamera(38,1,.1,100); camera.position.set(0,5.2,17); camera.lookAt(0,2.5,0);
+ scene.add(new T.HemisphereLight(0xffe6cf,0x34203d,2.2));
+ const key=new T.DirectionalLight(0xffd8a1,3.5);key.position.set(-5,10,8);key.castShadow=true;scene.add(key);
+ const rim=new T.PointLight(0x3a78ff,35,20);rim.position.set(-6,5,2);scene.add(rim);
+ const warm=new T.PointLight(0xff693c,28,20);warm.position.set(7,4,2);scene.add(warm);
+ function mat(color,rough=.68,metal=0){return new T.MeshStandardMaterial({color,roughness:rough,metalness:metal});}
+ const wood=mat(0x4a281c),gold=mat(0xc5a15c,.35,.55),red=mat(0x6f1924),seat=mat(0x48202a),floorMat=mat(0x5b3540,.28,.25);
+ function cube(parent,x,y,z,sx,sy,sz,m){const o=new T.Mesh(new T.BoxGeometry(sx,sy,sz),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;}
+ // Procedural chamber: polished floor, dais, columns, galleries, benches and the central rostrum.
+ const floor=cube(scene,0,-.22,-2,30,.35,19,floorMat); floor.receiveShadow=true;
+ for(let x=-13;x<=13;x+=2.6){cube(scene,x,.1,-7,.12,.05,14,gold);}
+ cube(scene,0,.5,-7,8,1.4,2,wood);cube(scene,0,1.3,-7,4.4,1.7,1.3,gold);cube(scene,0,1.42,-6.25,3.9,1.3,.08,wood);
+ for(let i=-5;i<=5;i++){const x=i*1.9;cube(scene,x,1.2,-8.8,1.55,1.1,.7,seat);cube(scene,x,1.82,-9.15,1.55,.16,.18,gold);}
+ for(let side of [-1,1]){for(let level=0;level<3;level++){cube(scene,side*8,1.1+level*1.35,-5-level*.2,6,.35,4,wood);for(let x=-2;x<=2;x++){cube(scene,side*8+x*1.05,1.55+level*1.35,-4.5-level*.2,.7,.65,.65,seat);}}for(let x=-1;x<=1;x++){const col=cube(scene,side*12,4.1,-7+x*0,1,7,.9,wood);col.position.x=side*12;}}
+ // Stylized miniature crowd silhouettes behind the fighters.
+ const crowdMat=mat(0x171723),crowdSuit=mat(0x252b39);
+ for(let row=0;row<2;row++)for(let i=0;i<18;i++){const x=(i-8.5)*.78,z=-5.8-row*1.5;const g=new T.Group();g.position.set(x,0,z);scene.add(g);const torso=cube(g,0,1.2,0,.36,.72,.28,crowdSuit);const head=new T.Mesh(new T.SphereGeometry(.16,8,8),crowdMat);head.position.y=1.72;g.add(head);}
+ // Flag capes are cloth-like colored panels with emblem stripes.
+ function cape(parent,color,kind){const geo=new T.PlaneGeometry(1.5,2.25,8,10);const m=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.7,emissive:color,emissiveIntensity:.08});const mesh=new T.Mesh(geo,m);mesh.position.set(0,1.8,-.34);mesh.rotation.y=.15;parent.add(mesh);mesh.userData.cape=true; if(kind==='morocco'){const star=new T.Group();for(let i=0;i<5;i++){const a=i*Math.PI*2/5;const line=cube(star,Math.cos(a)*.17,Math.sin(a)*.17,.015,.36,.025,.025,mat(0x167447));line.rotation.z=a+Math.PI/2;}star.position.set(0,1.8,-.29);parent.add(star);}if(kind==='estelada'){const stripe=cube(parent,0,1.8,-.27,1.5,.28,.025,mat(0xffd53d));stripe.position.x=.03;}}
+ function humanoid(id,x,colors,kind){const root=new T.Group();root.position.set(x,0,0);scene.add(root);const body=new T.Group();root.add(body);
+ const skin=mat(colors.skin||0xc58c6b),suit=mat(colors.suit),shirt=mat(0xe9e6df),tie=mat(colors.tie||0x54243b),hair=mat(colors.hair||0x332a25),shoe=mat(0x11131a,.4);
+ // Legs with independently animated pivots.
+ const legs=[];for(let side of [-1,1]){const hip=new T.Group();hip.position.set(side*.27,1.15,0);body.add(hip);cube(hip,0,-.38,0,.3,.8,.38,suit).position.y=-.36;cube(hip,0,-.86,.12,.32,.18,.5,shoe);legs.push(hip);}
+ cube(body,0,1.72,0,.9,1.15,.48,suit);
+ cube(body,0,1.91,.252,.36,.7,.035,shirt);cube(body,0,1.78,.28,.12,.65,.045,tie);
+ const neck=cube(body,0,2.4,0,.2,.23,.2,skin);
+ const head=new T.Group();head.position.set(0,2.72,.02);body.add(head);
+ const face=new T.Mesh(new T.SphereGeometry(.38,20,16),skin);face.scale.set(.8,1.12,.76);face.castShadow=true;head.add(face);
+ const haircap=new T.Mesh(new T.SphereGeometry(.39,18,12,0,Math.PI*2,0,Math.PI*.55),hair);haircap.scale.set(.85,1.15,.8);haircap.position.y=.08;head.add(haircap);
+ const nose=cube(head,0,-.02,.31,.09,.13,.12,skin);
+ for(let side of [-1,1]){const eye=cube(head,side*.13,.05,.29,.075,.045,.025,mat(0x17131a));}
+ // Arms swing from shoulders.
+ const arms=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);const arm=cube(shoulder,side*.05,-.32,.04,.23,.65,.25,suit);arm.rotation.z=side*.12;const hand=new T.Mesh(new T.SphereGeometry(.15,12,10),skin);hand.position.set(side*.06,-.68,.13);shoulder.add(hand);arms.push(shoulder);}
+ cape(body,colors.cape||0x9b1b2d,kind);
+ // Stand with a readable fighting pose.
+ arms[0].rotation.z=-.42;arms[0].rotation.x=-.5;arms[1].rotation.z=.55;arms[1].rotation.x=-.7;
+ root.userData={body,head,arms,legs,kind,id,baseX:x,phase:Math.random()*5,attackUntil:0,blockUntil:0};return root;}
+ const fighters={
+ sanchez:humanoid('sanchez',3.2,{skin:0xc58c6b,suit:0x18253c,tie:0x582c43,hair:0x28252b,cape:0xb30e2d},'morocco'),
+ abascal:humanoid('abascal',3.2,{skin:0xc58c6b,suit:0x29372e,tie:0x45392b,hair:0x302722,cape:0x9d1b24},'spain'),
+ rufian:humanoid('rufian',3.2,{skin:0xb98160,suit:0x20232c,tie:0x6a2c2c,hair:0x30251e,cape:0x292a30},'euro'),
+ puigdemont:humanoid('puigdemont',-3.2,{skin:0xc58c6b,suit:0x142849,tie:0x202f52,hair:0x5a4739,cape:0x173d8c},'estelada'),
+ orriols:humanoid('orriols',-3.2,{skin:0xd7a28b,suit:0x282039,tie:0x4c1f4e,hair:0x241d2d,cape:0x33224d},'estelada')
+ };
+ // Faces toward each other; scale to fit the camera.
+ for(const f of Object.values(fighters)){f.rotation.y=f.userData.baseX<0?.25:-.25;f.scale.setScalar(1.12);}
+ function resize(){const w=stage.clientWidth||800,h=stage.clientHeight||500;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+ new ResizeObserver(resize).observe(stage);resize();
+ let last=0;
+ function animate(t){requestAnimationFrame(animate);const dt=Math.min(.04,(t-last)/1000||0);last=t;for(const f of Object.values(fighters)){const u=f.userData;u.phase+=dt*3;u.body.position.y=Math.abs(Math.sin(u.phase))*.025;u.legs.forEach((l,i)=>{l.rotation.x=Math.sin(u.phase+(i*Math.PI))*.04;});if(t<u.attackUntil){u.arms[1].rotation.x=-1.8;u.arms[1].rotation.z=-.8;}else{u.arms[0].rotation.x=-.5+Math.sin(u.phase)*.05;u.arms[1].rotation.x=-.7+Math.sin(u.phase+1)*.05;}if(t<u.blockUntil){u.arms[0].rotation.x=-1.8;u.arms[1].rotation.x=-1.8;}}renderer.render(scene,camera);}
+ requestAnimationFrame(animate);
+ function chosenId(i){const n=document.getElementById('name'+i)?.textContent||'';return Object.keys(fighters).find(k=>({sanchez:'Pedro Sánchez',abascal:'Santiago Abascal',rufian:'Gabriel Rufián',puigdemont:'Puigdemont',orriols:'Sílvia Orriols'}[k])===n)|| (i===0?'puigdemont':'sanchez');}
+ function updateFighter(i){const id=chosenId(i);Object.values(fighters).forEach(f=>f.visible=false);const f=fighters[id]||fighters.puigdemont;f.visible=true;f.position.x=i===0?-3.2:3.2;f.rotation.y=i===0?.25:-.25;f.userData.baseX=f.position.x;f.scale.setScalar(1.12);return f;}
+ let active=[updateFighter(0),updateFighter(1)];
+ // Server events already drive the match; add physical animation to those events without replacing existing UI logic.
+ const feed=document.getElementById('feed');const oldText=feed?feed.textContent:'';
+ const origFeed=window.__pa3dFeed;
+ window.addEventListener('keydown',e=>{if(!document.body.classList.contains('in-fight'))return;const f=active[0];if(e.key.toLowerCase()==='j'){f.userData.attackUntil=performance.now()+240;}if(e.key.toLowerCase()==='k'){f.userData.attackUntil=performance.now()+480;}if(e.key==='Shift'){f.userData.blockUntil=performance.now()+800;}});
+ const originalRenderChars=window.renderChars;
+ // Existing game defines renderChars locally; observe HUD name changes and switch 3D fighters.
+ const observer=new MutationObserver(()=>{active=[updateFighter(0),updateFighter(1)];});
+ ['name0','name1'].forEach(id=>observer.observe(document.getElementById(id),{childList:true,characterData:true,subtree:true}));
+ // Decorative portal effect when Puigdemont uses rare ability.
+ window.addEventListener('keydown',e=>{if(document.body.classList.contains('in-fight')&&e.key.toLowerCase()==='k'&&chosenId(0)==='puigdemont'){rim.intensity=75;setTimeout(()=>rim.intensity=35,600);}});
+})();
+</script></body></html>
