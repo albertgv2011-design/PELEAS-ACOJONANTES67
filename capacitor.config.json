@@ -1,0 +1,6 @@
+{
+  "appId": "com.peleasacojonantes.game",
+  "appName": "PELEAS ACOJONANTES",
+  "webDir": "public",
+  "server": { "androidScheme": "https" }
+}

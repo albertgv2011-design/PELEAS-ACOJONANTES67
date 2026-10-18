@@ -1,0 +1,9 @@
+{
+  "name": "peleas-acojonantes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Videojoc de lluita online 1 contra 1",
+  "scripts": {"start": "node server/index.js", "build": "echo 'Web client ready in public/'"},
+  "dependencies": {"@capacitor/android":"^7.4.3", "@capacitor/core":"^7.4.3", "@capacitor/cli":"^7.4.3", "ws":"^8.18.3"},
+  "devDependencies": {}
+}
