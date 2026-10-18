@@ -126,7 +126,8 @@ body.in-fight #fight3d-fallback{inset:0}
  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:true});
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2)); renderer.shadowMap.enabled=true; renderer.shadowMap.type=T.PCFSoftShadowMap;
  renderer.outputColorSpace=T.SRGBColorSpace;
- const scene=new T.Scene(); scene.background=new T.Color(0x21151a); scene.fog=new T.Fog(0x21151a,18,42);
+ const scene=new T.Scene(); // Transparent canvas so the real Congress photo behind it remains visible.
+ scene.background=null; scene.fog=null;
  const camera=new T.PerspectiveCamera(34,1,.1,100); camera.position.set(0,4.3,12.5); camera.lookAt(0,2.15,0);
  scene.add(new T.HemisphereLight(0xffe6cf,0x34203d,2.2));
  const key=new T.DirectionalLight(0xffd8a1,3.5);key.position.set(-5,10,8);key.castShadow=true;scene.add(key);
