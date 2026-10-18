@@ -198,7 +198,7 @@ body.in-fight #fight3d-fallback{inset:0}
  };
  // Faces toward each other; scale to fit the camera.
  for(const f of Object.values(fighters)){f.visible=false;f.rotation.y=f.userData.baseX<0?.25:-.25;f.position.y=-.42;f.scale.setScalar(1.65);}
- function resize(){const w=Math.max(1,stage.clientWidth||window.innerWidth||800),h=Math.max(1,stage.clientHeight||window.innerHeight||500);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.position.set(0,4.0,13.8);camera.lookAt(0,1.25,0);}
+ function resize(){const w=Math.max(1,stage.clientWidth||window.innerWidth||800),h=Math.max(1,stage.clientHeight||window.innerHeight||500);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.position.set(0,4.0,13.8);camera.lookAt(0,2.15,0);}
  if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);window.addEventListener('resize',resize,{passive:true});resize();
  let last=0;
  function animate(t){requestAnimationFrame(animate);const dt=Math.min(.04,(t-last)/1000||0);last=t;const now=performance.now();animateSpecials(now,dt);
