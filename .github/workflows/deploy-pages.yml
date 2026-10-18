@@ -23,6 +23,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Validate inline JavaScript
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const html = fs.readFileSync('public/index.html', 'utf8');
+          const scripts = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)]
+            .filter(([, attrs, body]) => !/\\bsrc\\s*=/.test(attrs) && body.trim());
+          scripts.forEach(([, , body], i) => new vm.Script(body, { filename: `inline-${i + 1}.js` }));
+          console.log(`Validated ${scripts.length} inline JavaScript blocks.`);
+          NODE
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload website
