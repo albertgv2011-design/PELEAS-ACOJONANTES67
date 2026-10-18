@@ -58,7 +58,7 @@ wss.on('connection', ws => {
     } else if (m.type === 'start') {
       if(room.players.length!==2) return send(ws,{type:'error',message:'Calen dos jugadors reals.'});
       room.state='fighting'; room.fight={hp:[100,100],charge:[0,0],hits:[0,0],blocking:[false,false],positions:[20,80],started:Date.now()};
-      broadcast(room,{type:'fight-start',hp:[100,100],charge:[0,0],started:room.fight.started});
+      broadcast(room,{type:'fight-start',hp:[100,100],charge:[0,0],characters:room.players.map(p=>p.character||'puigdemont'),started:room.fight.started});
     } else if (m.type === 'action' && room.state==='fighting') {
       const i=ws.playerIndex===1?1:0; const opponent=1-i;
       if (!['move-left','move-right','jump','crouch','attack','rare','block'].includes(m.action)) return;
