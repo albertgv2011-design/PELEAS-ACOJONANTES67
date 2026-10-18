@@ -178,7 +178,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  renderer.render(scene,camera);}
  requestAnimationFrame(animate);
  function chosenId(i){const n=document.getElementById('name'+i)?.textContent||'';return Object.keys(fighters).find(k=>({sanchez:'Pedro Sánchez',abascal:'Santiago Abascal',rufian:'Gabriel Rufián',puigdemont:'Puigdemont',orriols:'Sílvia Orriols'}[k])===n)|| (i===0?'puigdemont':'sanchez');}
- function updateFighter(i){let id=chosenId(i);if(window.__paPractice){id=i===0?'sanchez':chosenId(0);}if(!window.__pa3dSelected)window.__pa3dSelected=[null,null];const prev=window.__pa3dSelected[i];if(prev)prev.visible=false;const f=fighters[id]||fighters.puigdemont;const changed=prev!==f;f.visible=true;const visualLeft=window.__paPractice?i===1:i===0;if(changed){f.position.x=visualLeft?-3.35:3.35;f.rotation.y=visualLeft?.32:-.32;f.userData.baseX=f.position.x;f.userData.targetX=f.position.x;f.userData.moveKey='';f.userData.moveUntil=0;f.userData.dead=false;f.userData.attackUntil=0;f.userData.jumpUntil=0;f.userData.duckUntil=0;f.userData.blockUntil=0;f.scale.setScalar(1.65);}window.__pa3dSelected[i]=f;return f;}
+ function updateFighter(i){let id=chosenId(i);if(window.__paPractice){id=i===0?chosenId(0):'sanchez';}if(!window.__pa3dSelected)window.__pa3dSelected=[null,null];const prev=window.__pa3dSelected[i];if(prev)prev.visible=false;const f=fighters[id]||fighters.puigdemont;const changed=prev!==f;f.visible=true;const visualLeft=window.__paPractice?i===1:i===0;if(changed){f.position.x=visualLeft?-3.35:3.35;f.rotation.y=visualLeft?.32:-.32;f.userData.baseX=f.position.x;f.userData.targetX=f.position.x;f.userData.moveKey='';f.userData.moveUntil=0;f.userData.dead=false;f.userData.attackUntil=0;f.userData.jumpUntil=0;f.userData.duckUntil=0;f.userData.blockUntil=0;f.scale.setScalar(1.65);}window.__pa3dSelected[i]=f;return f;}
  Object.values(fighters).forEach(f=>f.visible=false);let active=[updateFighter(0),updateFighter(1)];
 
  // Character-specific special attacks: each uses its own visual motif and motion.
@@ -232,7 +232,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  const feed=document.getElementById('feed');const oldText=feed?feed.textContent:'';
  const origFeed=window.__pa3dFeed;
  const keyDowns=new Set();
- window.addEventListener('keydown',e=>{if(!document.body.classList.contains('in-fight'))return;const f=active[0];if(!f)return;const u=f.userData,k=e.key.toLowerCase();if(keyDowns.has(k))return;keyDowns.add(k);const now=performance.now();
+ window.addEventListener('keydown',e=>{if(!document.body.classList.contains('in-fight'))return;const f=active[playerIndex];if(!f)return;const u=f.userData,k=e.key.toLowerCase();if(keyDowns.has(k))return;keyDowns.add(k);const now=performance.now();
  if(k==='a'||k==='d'){u.moveUntil=now+60000;u.moveDir=k==='a'?-1:1;u.moveKey=k;}
  if(k==='s'){u.duckUntil=now+650;}
  if(k==='w'){u.jumpUntil=now+620;u.jumpStarted=now;}
@@ -240,7 +240,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  if(k==='k'){specialAttack(f);}
  if(k==='shift'){u.blockUntil=now+1000;}
  });
- window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();keyDowns.delete(k);if(!document.body.classList.contains('in-fight'))return;const f=active[0];if(f&&(k==='a'||k==='d')){f.userData.moveUntil=0;f.userData.moveKey='';}});
+ window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();keyDowns.delete(k);if(!document.body.classList.contains('in-fight'))return;const f=active[playerIndex];if(f&&(k==='a'||k==='d')){f.userData.moveUntil=0;f.userData.moveKey='';}});
  const originalRenderChars=window.renderChars;
  // Existing game defines renderChars locally; observe HUD name changes and switch 3D fighters.
  const observer=new MutationObserver(()=>{active=[updateFighter(0),updateFighter(1)];});
