@@ -7,13 +7,14 @@
  <radialGradient id="blue"><stop stop-color="#147cff" stop-opacity=".55"/><stop offset="1" stop-color="#147cff" stop-opacity="0"/></radialGradient>
  <radialGradient id="orange"><stop stop-color="#ff722a" stop-opacity=".5"/><stop offset="1" stop-color="#ff722a" stop-opacity="0"/></radialGradient>
  <pattern id="mesh" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M0 0L18 18M18 0L0 18" stroke="#a5b7d2" stroke-opacity=".22" stroke-width="1.4"/></pattern>
- <pattern id="seats" width="39" height="29" patternUnits="userSpaceOnUse"><rect x="3" y="5" width="14" height="15" rx="6" fill="#34456d"/><rect x="20" y="8" width="14" height="15" rx="6" fill="#b65a35"/><circle cx="10" cy="10" r="2" fill="#e7b99b"/><circle cx="27" cy="13" r="2" fill="#e7b99b"/></pattern>
+ <pattern id="seats" width="28" height="24" patternUnits="userSpaceOnUse"><rect x="2" y="5" width="10" height="13" rx="4.5" fill="#34456d"/><rect x="15" y="4" width="10" height="14" rx="4.5" fill="#a94f34"/><ellipse cx="7" cy="8" rx="2" ry="2.5" fill="#e2c6b0"/><ellipse cx="20" cy="7" rx="2" ry="2.5" fill="#e2c6b0"/><path d="M0 20H28" stroke="#60708c" stroke-width="1.5" opacity=".65"/></pattern>
  <filter id="blur"><feGaussianBlur stdDeviation="22"/></filter>
 </defs>
 <rect width="1672" height="941" fill="url(#sky)"/>
 <ellipse cx="180" cy="440" rx="450" ry="260" fill="url(#blue)"/><ellipse cx="1500" cy="440" rx="430" ry="270" fill="url(#orange)"/>
 <!-- industrial trusses and arena roof -->
-<g fill="none" stroke="#33456a" stroke-width="7" opacity=".75"><path d="M0 30L250 120 480 45 710 125 940 35 1170 120 1420 38 1672 110"/><path d="M0 80L250 160 480 95 710 170 940 90 1170 165 1420 92 1672 150"/><path d="M80 0L80 150M250 0L250 125M470 0L470 120M700 0L700 145M940 0L940 130M1170 0L1170 145M1410 0L1410 130M1590 0L1590 155"/></g>
+<g fill="none" stroke="#33456a" stroke-width="5" opacity=".72"><path d="M0 30L250 120 480 45 710 125 940 35 1170 120 1420 38 1672 110"/><path d="M0 80L250 160 480 95 710 170 940 90 1170 165 1420 92 1672 150"/></g>
+<g fill="none" stroke="#273653" stroke-width="3" opacity=".7"><path d="M180 0L180 125M520 0L520 130M835 0L835 130M1150 0L1150 130M1480 0L1480 125"/></g>
 <g opacity=".95"><path d="M570 0h80v180h-80z" fill="#b95b25" opacity=".32"/><path d="M1020 0h70v180h-70z" fill="#c15b2a" opacity=".32"/><path d="M604 20v112M1054 20v112" stroke="#ff9a43" stroke-width="6"/><path d="M620 20v112M1070 20v112" stroke="#ffb46b" stroke-width="2"/></g>
 <!-- floodlights -->
 <g fill="#dbeaff"><rect x="75" y="35" width="96" height="48" rx="4"/><rect x="315" y="58" width="75" height="40" rx="4"/><rect x="1285" y="50" width="80" height="42" rx="4"/><rect x="1505" y="28" width="98" height="50" rx="4"/></g>
@@ -30,7 +31,7 @@
 <g fill="#ff8b3c"><rect x="140" y="265" width="22" height="12"/><rect x="545" y="292" width="30" height="12"/><rect x="1060" y="292" width="30" height="12"/><rect x="1470" y="264" width="32" height="12"/></g>
 <!-- protective fence -->
 <path d="M0 365L1672 365V515L0 515Z" fill="#0b1324" opacity=".8"/>
-<path d="M0 365L1672 365V515L0 515Z" fill="url(#mesh)"/>
+<path d="M0 365L1672 365V515L0 515Z" fill="url(#mesh)" opacity=".58"/>
 <path d="M0 365H1672M0 515H1672" stroke="url(#rail)" stroke-width="10"/>
 <g stroke="#607aa7" stroke-width="6" opacity=".85"><path d="M52 355V523M280 355V523M508 355V523M736 355V523M964 355V523M1192 355V523M1420 355V523M1648 355V523"/></g>
 <g fill="#0b1529" stroke="#4b658f" stroke-width="4"><path d="M20 405h125v68H20z"/><path d="M1525 405h125v68h-125z"/></g>
@@ -39,7 +40,7 @@
 <path d="M0 515L1672 515V941H0Z" fill="url(#floor)"/>
 <rect x="0" y="515" width="1672" height="426" fill="url(#glow)" opacity=".55"/>
 <ellipse cx="220" cy="650" rx="420" ry="200" fill="url(#blue)"/><ellipse cx="1450" cy="650" rx="430" ry="220" fill="url(#orange)"/>
-<g stroke="#8da5d4" stroke-opacity=".19" fill="none" stroke-width="2"><path d="M0 590L1672 590M0 690L1672 690M0 790L1672 790M0 890L1672 890"/><path d="M836 515L0 941M836 515L280 941M836 515L560 941M836 515L1112 941M836 515L1392 941M836 515L1672 941"/></g>
+<g stroke="#8da5d4" stroke-opacity=".13" fill="none" stroke-width="2"><path d="M0 590Q836 640 1672 590M0 700Q836 750 1672 700M0 820Q836 870 1672 820"/><path d="M836 515L0 941M836 515L380 941M836 515L650 941M836 515L1022 941M836 515L1292 941M836 515L1672 941"/></g>
 <path d="M0 516H1672" stroke="#b9c9e7" stroke-opacity=".5" stroke-width="4"/>
 <g opacity=".5" filter="url(#blur)"><path d="M80 540H430L480 560H60Z" fill="#1685ff"/><path d="M1230 540H1600L1640 565H1190Z" fill="#ff762a"/></g>
 </svg>
