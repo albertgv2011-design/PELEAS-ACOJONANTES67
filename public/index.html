@@ -90,7 +90,7 @@ body.in-fight #game{grid-template-rows:88px minmax(0,1fr) 0!important}
 <p class="small">El bot és un maniquí de pràctica: no es mou i no perd vida. La batalla online només es pot començar quan tots dos jugadors són a la sala.</p><p class="small">Comparteix el codi amb un amic. Necessiteu una adreça de servidor públic per jugar des de fora de la xarxa local.</p><div id="roomInfo" class="status"></div></section><section id="game" class="panel hidden">
 <div class="fight-top"><div class="combatant"><span id="portrait0">⭐</span><div><b id="name0">Puigdemont</b><div class="health"><span id="hp0"></span></div><small><span id="hp0text">100</span>% VIDA</small></div></div><div class="timer" id="roundState">00</div><div class="combatant right"><div><b id="name1">Pedro Sánchez</b><div class="health right"><span id="hp1"></span></div><small><span id="hp1text">100</span>% VIDA</small></div><span id="portrait1">🇲🇦</span></div></div>
 <div class="congress-stage"><div id="countdown" class="countdown hidden">3</div><canvas id="fight3d" aria-label="Escena 3D de combat"></canvas><div class="floor"></div><div id="avatar0" class="avatar fighter-left">⭐</div><div id="avatar1" class="avatar fighter-right">🇲🇦</div><div id="feed" class="fight-feed">Connecta un segon jugador per començar.</div></div>
-<div class="fight-bottom"><div class="controls-hint"><b>CONTROLS</b><span><kbd>W</kbd> Saltar</span><span><kbd>A</kbd> Esquerra</span><span><kbd>S</kbd> Ajupir-se</span><span><kbd>D</kbd> Dreta</span><span><kbd>J</kbd> Atac bàsic</span><span><kbd>K</kbd> Habilitat rara</span><span><kbd>Shift</kbd> Bloqueig</span></div><div class="ability-box"><b>👊 ATAC BÀSIC · J</b><p>Cop ràpid</p><b>🌟 HABILITAT RARA · K</b><p id="rareStatus">Es carrega encertant 8 cops.</p><div class="chargebar"><span id="charge0"></span></div><button id="rareButton" data-action="rare" disabled>Activar habilitat rara</button><div class="button-row"><button class="secondary" data-action="block">🛡️ Bloqueig</button><button class="secondary" id="exitFight">⬅️ Menú</button><button id="rematch" class="secondary hidden">REVANJA</button></div></div></div>
+<div class="fight-bottom"><div class="controls-hint"><b>CONTROLS</b><span><kbd>W</kbd> Saltar</span><span><kbd>A</kbd> Esquerra</span><span><kbd>S</kbd> Ajupir-se</span><span><kbd>D</kbd> Dreta</span><span><kbd>J</kbd> Atac bàsic</span><span><kbd>K</kbd> Habilitat rara</span><span><kbd>Shift</kbd> Bloqueig</span><span><kbd>H</kbd> Impuls / dash</span></div><div class="ability-box"><b>👊 ATAC BÀSIC · J</b><p>Cop ràpid</p><b>🌟 HABILITAT RARA · K</b><p id="rareStatus">Es carrega encertant 8 cops.</p><div class="chargebar"><span id="charge0"></span></div><button id="rareButton" data-action="rare" disabled>Activar habilitat rara</button><div class="button-row"><button class="secondary" data-action="block">🛡️ Bloqueig</button><button class="secondary" id="exitFight">⬅️ Menú</button><button id="rematch" class="secondary hidden">REVANJA</button></div></div></div>
 <button id="start" class="hidden" disabled>⚔️ INICIAR LLUITA</button>
 </section><footer>PELEAS ACOJONANTES · Prototip inicial · Fes servir només personatges i imatges que tinguis dret a distribuir.</footer></main><script>
 const $=id=>document.getElementById(id);let ws=null,playerIndex=0,roomCode='',players=0,latency=null,connected=false;const chars={
@@ -162,12 +162,12 @@ body.in-fight #fight3d-fallback{inset:0}
  function humanoid(id,x,colors,kind){const root=new T.Group();root.position.set(x,0,0);scene.add(root);const body=new T.Group();root.add(body);
  const skin=mat(colors.skin||0xc58c6b),suit=mat(colors.suit),shirt=mat(0xe9e6df),tie=mat(colors.tie||0x54243b),hair=mat(colors.hair||0x332a25),shoe=mat(0x11131a,.4);
  // Legs with independently animated pivots.
- const legs=[];for(let side of [-1,1]){const hip=new T.Group();hip.position.set(side*.27,1.15,0);body.add(hip);cube(hip,0,-.38,0,.3,.8,.38,suit).position.y=-.36;cube(hip,0,-.86,.12,.32,.18,.5,shoe);legs.push(hip);}
+ const pants=mat(colors.pants||colors.suit);const legs=[];for(let side of [-1,1]){const hip=new T.Group();hip.position.set(side*.27,1.15,0);body.add(hip);cube(hip,0,-.38,0,.3,.8,.38,pants).position.y=-.36;cube(hip,0,-.86,.12,.32,.18,.5,shoe);legs.push(hip);}
  cube(body,0,1.72,0,.9,1.15,.48,suit);
  cube(body,0,1.91,.252,.36,.7,.035,shirt);cube(body,0,1.78,.28,.12,.65,.045,tie);
  const neck=cube(body,0,2.4,0,.2,.23,.2,skin);
  const head=new T.Group();head.position.set(0,2.72,.02);body.add(head);
- const face=new T.Mesh(new T.SphereGeometry(.38,20,16),skin);face.scale.set(.8,1.12,.76);face.castShadow=true;head.add(face);
+ const face=new T.Mesh(new T.BoxGeometry(.62,.78,.48),skin);face.castShadow=true;head.add(face);
  const haircap=new T.Mesh(new T.SphereGeometry(.39,18,12,0,Math.PI*2,0,Math.PI*.55),hair);haircap.scale.set(.85,1.15,.8);haircap.position.y=.08;head.add(haircap);
  const nose=cube(head,0,-.02,.31,.09,.13,.12,skin);
  for(let side of [-1,1]){cube(head,side*.13,.05,.29,.075,.045,.025,mat(0x17131a));}
@@ -199,17 +199,28 @@ body.in-fight #fight3d-fallback{inset:0}
  }
  // Arms swing from shoulders.
  const arms=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);const arm=cube(shoulder,side*.05,-.32,.04,.23,.65,.25,suit);arm.rotation.z=side*.12;const hand=new T.Mesh(new T.SphereGeometry(.15,12,10),skin);hand.position.set(side*.06,-.68,.13);shoulder.add(hand);arms.push(shoulder);}
- // Character identity is carried by face, hair, beard and the existing costume colors.
+ // Character identity follows the user's voxel designs: angular head, blocky clothes and signature accessories.
+ if(id==='rufian'){
+   // White shirt and black trousers, as in the supplied voxel reference.
+   cube(body,-.24,1.72,.255,.12,.95,.045,shirt);cube(body,.24,1.72,.255,.12,.95,.045,shirt);
+ }else if(id==='orriols'){
+   // Long dark coat and two-tone scarf.
+   cube(body,0,1.45,.29,.25,.9,.07,mat(0x8d244b));
+   cube(body,-.08,1.03,.30,.17,.48,.075,mat(0x087a80));
+ }else if(id==='puigdemont'){
+   // Small yellow ribbon pinned to the lapel.
+   const ribbon=mat(0xffd21f);cube(body,.29,2.03,.285,.09,.18,.045,ribbon).rotation.z=-.5;cube(body,.34,1.96,.29,.09,.18,.045,ribbon).rotation.z=.5;
+ }
  cape(body,colors.cape||0x9b1b2d,kind);
  // Stand with a readable fighting pose.
  arms[0].rotation.z=-.42;arms[0].rotation.x=-.5;arms[1].rotation.z=.55;arms[1].rotation.x=-.7;
  root.userData={body,head,arms,legs,kind,id,baseX:x,phase:Math.random()*5,attackUntil:0,blockUntil:0,duckUntil:0,hitUntil:0,dead:false,celebrate:false};return root;}
  const fighters={
- sanchez:humanoid('sanchez',3.2,{skin:0xc58c6b,suit:0x18253c,tie:0x582c43,hair:0x28252b,cape:0xb30e2d},'morocco'),
- abascal:humanoid('abascal',3.2,{skin:0xc58c6b,suit:0x29372e,tie:0x45392b,hair:0x302722,cape:0x9d1b24},'spain'),
- rufian:humanoid('rufian',3.2,{skin:0xb98160,suit:0x20232c,tie:0x6a2c2c,hair:0x30251e,cape:0x292a30},'euro'),
- puigdemont:humanoid('puigdemont',-3.2,{skin:0xc58c6b,suit:0x142849,tie:0x202f52,hair:0x5a4739,cape:0x173d8c},'estelada'),
- orriols:humanoid('orriols',-3.2,{skin:0xd7a28b,suit:0x282039,tie:0x4c1f4e,hair:0x241d2d,cape:0x33224d},'estelada')
+ sanchez:humanoid('sanchez',3.2,{skin:0xc58c6b,suit:0x182b50,pants:0x182b50,tie:0x76233b,hair:0x28252b,cape:0x182b50},'morocco'),
+ abascal:humanoid('abascal',3.2,{skin:0xc58c6b,suit:0x142746,pants:0x142746,shirt:0xe8edf4,tie:0x16233b,hair:0x302722,cape:0x142746},'spain'),
+ rufian:humanoid('rufian',3.2,{skin:0xb98160,suit:0xf2f2f2,pants:0x17171b,shirt:0xf7f7f7,tie:0xeeeeee,hair:0x30251e,cape:0x17171b},'euro'),
+ puigdemont:humanoid('puigdemont',-3.2,{skin:0xc58c6b,suit:0x17171b,pants:0x17171b,shirt:0xf2f2f2,tie:0x1d2b52,hair:0x292321,cape:0x17171b},'estelada'),
+ orriols:humanoid('orriols',-3.2,{skin:0xd7a28b,suit:0x17171b,pants:0x17171b,shirt:0x242226,tie:0x242226,hair:0x241d2d,cape:0x17171b},'estelada')
  };
  // Faces toward each other; scale to fit the camera.
  for(const f of Object.values(fighters)){f.visible=false;f.rotation.y=f.userData.baseX<0?.25:-.25;f.position.y=-.85;f.scale.setScalar(1.65);}
