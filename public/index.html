@@ -104,8 +104,10 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  function mat(color,rough=.68,metal=0){return new T.MeshStandardMaterial({color,roughness:rough,metalness:metal});}
  // Photographic backdrop of the real Congress of Deputies hemicycle.
  // Source: Wikimedia Commons, Ministry of the Presidency of the Government of Spain.
+ function cube(parent,x,y,z,sx,sy,sz,m){const o=new T.Mesh(new T.BoxGeometry(sx,sy,sz),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;}
  const floorMat=mat(0x34242a,.32,.18);
- const floor=cube(scene,0,-.22,-2,30,.35,19,floorMat);floor.receiveShadow=true;
+ // A flat horizontal floor: the old oversized box crossed in front of the backdrop.
+ const floor=new T.Mesh(new T.PlaneGeometry(30,19),floorMat);floor.rotation.x=-Math.PI/2;floor.position.set(0,-.22,-2);floor.receiveShadow=true;scene.add(floor);
  const congressPhotoUrl='https://upload.wikimedia.org/wikipedia/commons/c/cf/Interior_del_Congreso_de_los_Diputados_de_Espa%C3%B1a.jpg';
  const photoMaterial=new T.MeshBasicMaterial({color:0xffffff,side:T.DoubleSide});
  const photoPlane=new T.Mesh(new T.PlaneGeometry(25,16),photoMaterial);
