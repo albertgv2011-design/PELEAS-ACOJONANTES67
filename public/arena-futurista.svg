@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1672" height="941" viewBox="0 0 1672 941">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#080e20"/><stop offset=".45" stop-color="#172345"/><stop offset="1" stop-color="#11192c"/></linearGradient>
+ <linearGradient id="rail"><stop stop-color="#087dff"/><stop offset=".42" stop-color="#43547e"/><stop offset=".58" stop-color="#6c4b48"/><stop offset="1" stop-color="#ff782d"/></linearGradient>
+ <linearGradient id="floor"><stop stop-color="#10254b"/><stop offset=".48" stop-color="#1d2639"/><stop offset="1" stop-color="#542b26"/></linearGradient>
+ <linearGradient id="glow"><stop stop-color="#0d7dff" stop-opacity=".8"/><stop offset=".5" stop-color="#7d83ad" stop-opacity=".05"/><stop offset="1" stop-color="#ff7027" stop-opacity=".8"/></linearGradient>
+ <radialGradient id="blue"><stop stop-color="#147cff" stop-opacity=".55"/><stop offset="1" stop-color="#147cff" stop-opacity="0"/></radialGradient>
+ <radialGradient id="orange"><stop stop-color="#ff722a" stop-opacity=".5"/><stop offset="1" stop-color="#ff722a" stop-opacity="0"/></radialGradient>
+ <pattern id="mesh" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M0 0L18 18M18 0L0 18" stroke="#a5b7d2" stroke-opacity=".22" stroke-width="1.4"/></pattern>
+ <pattern id="seats" width="39" height="29" patternUnits="userSpaceOnUse"><rect x="3" y="5" width="14" height="15" rx="6" fill="#34456d"/><rect x="20" y="8" width="14" height="15" rx="6" fill="#b65a35"/><circle cx="10" cy="10" r="2" fill="#e7b99b"/><circle cx="27" cy="13" r="2" fill="#e7b99b"/></pattern>
+ <filter id="blur"><feGaussianBlur stdDeviation="22"/></filter>
+</defs>
+<rect width="1672" height="941" fill="url(#sky)"/>
+<ellipse cx="180" cy="440" rx="450" ry="260" fill="url(#blue)"/><ellipse cx="1500" cy="440" rx="430" ry="270" fill="url(#orange)"/>
+<!-- industrial trusses and arena roof -->
+<g fill="none" stroke="#33456a" stroke-width="7" opacity=".75"><path d="M0 30L250 120 480 45 710 125 940 35 1170 120 1420 38 1672 110"/><path d="M0 80L250 160 480 95 710 170 940 90 1170 165 1420 92 1672 150"/><path d="M80 0L80 150M250 0L250 125M470 0L470 120M700 0L700 145M940 0L940 130M1170 0L1170 145M1410 0L1410 130M1590 0L1590 155"/></g>
+<g opacity=".95"><path d="M570 0h80v180h-80z" fill="#b95b25" opacity=".32"/><path d="M1020 0h70v180h-70z" fill="#c15b2a" opacity=".32"/><path d="M604 20v112M1054 20v112" stroke="#ff9a43" stroke-width="6"/><path d="M620 20v112M1070 20v112" stroke="#ffb46b" stroke-width="2"/></g>
+<!-- floodlights -->
+<g fill="#dbeaff"><rect x="75" y="35" width="96" height="48" rx="4"/><rect x="315" y="58" width="75" height="40" rx="4"/><rect x="1285" y="50" width="80" height="42" rx="4"/><rect x="1505" y="28" width="98" height="50" rx="4"/></g>
+<g fill="#fff" opacity=".9"><path d="M90 42h12v12H90zM108 42h12v12h-12zM126 42h12v12h-12zM144 42h12v12h-12zM90 60h12v12H90zM108 60h12v12h-12zM126 60h12v12h-12zM144 60h12v12h-12zM1320 56h12v12h-12zM1338 56h12v12h-12zM1356 56h12v12h-12zM1520 36h12v12h-12zM1538 36h12v12h-12zM1556 36h12v12h-12zM1574 36h12v12h-12z"/></g>
+<!-- upper stands -->
+<path d="M0 125Q836 190 1672 125V420Q836 345 0 420Z" fill="#101a32"/>
+<path d="M0 140Q836 215 1672 140V400Q836 332 0 400Z" fill="url(#seats)"/>
+<path d="M0 145Q836 220 1672 145" fill="none" stroke="#7e9ac8" stroke-width="6" opacity=".8"/>
+<path d="M0 235Q836 294 1672 235" fill="none" stroke="#374b72" stroke-width="8"/>
+<path d="M0 320Q836 366 1672 320" fill="none" stroke="url(#rail)" stroke-width="12"/>
+<path d="M0 330Q836 375 1672 330" fill="none" stroke="#d8e6ff" stroke-opacity=".45" stroke-width="2"/>
+<!-- animated-looking crowd lights -->
+<g fill="#3b8cff"><rect x="80" y="175" width="34" height="14"/><rect x="380" y="202" width="28" height="12"/><rect x="690" y="220" width="26" height="12"/><rect x="905" y="220" width="28" height="12"/><rect x="1245" y="200" width="32" height="12"/></g>
+<g fill="#ff8b3c"><rect x="140" y="265" width="22" height="12"/><rect x="545" y="292" width="30" height="12"/><rect x="1060" y="292" width="30" height="12"/><rect x="1470" y="264" width="32" height="12"/></g>
+<!-- protective fence -->
+<path d="M0 365L1672 365V515L0 515Z" fill="#0b1324" opacity=".8"/>
+<path d="M0 365L1672 365V515L0 515Z" fill="url(#mesh)"/>
+<path d="M0 365H1672M0 515H1672" stroke="url(#rail)" stroke-width="10"/>
+<g stroke="#607aa7" stroke-width="6" opacity=".85"><path d="M52 355V523M280 355V523M508 355V523M736 355V523M964 355V523M1192 355V523M1420 355V523M1648 355V523"/></g>
+<g fill="#0b1529" stroke="#4b658f" stroke-width="4"><path d="M20 405h125v68H20z"/><path d="M1525 405h125v68h-125z"/></g>
+<g fill="#1689ff"><path d="M65 420l24 19-24 19 15 0 24-19-24-19zM105 420l24 19-24 19 15 0 24-19-24-19z"/></g><g fill="#ff8b35"><path d="M1530 420l24 19-24 19 15 0 24-19-24-19zM1570 420l24 19-24 19 15 0 24-19-24-19z"/></g>
+<!-- glossy fighting court -->
+<path d="M0 515L1672 515V941H0Z" fill="url(#floor)"/>
+<rect x="0" y="515" width="1672" height="426" fill="url(#glow)" opacity=".55"/>
+<ellipse cx="220" cy="650" rx="420" ry="200" fill="url(#blue)"/><ellipse cx="1450" cy="650" rx="430" ry="220" fill="url(#orange)"/>
+<g stroke="#8da5d4" stroke-opacity=".19" fill="none" stroke-width="2"><path d="M0 590L1672 590M0 690L1672 690M0 790L1672 790M0 890L1672 890"/><path d="M836 515L0 941M836 515L280 941M836 515L560 941M836 515L1112 941M836 515L1392 941M836 515L1672 941"/></g>
+<path d="M0 516H1672" stroke="#b9c9e7" stroke-opacity=".5" stroke-width="4"/>
+<g opacity=".5" filter="url(#blur)"><path d="M80 540H430L480 560H60Z" fill="#1685ff"/><path d="M1230 540H1600L1640 565H1190Z" fill="#ff762a"/></g>
+</svg>
