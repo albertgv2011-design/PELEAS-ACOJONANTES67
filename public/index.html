@@ -77,7 +77,7 @@ if(m.type==='combat-event'){if(window.__paPractice)return;updateHp(m.hp);updateC
 if(m.type==='fight-over'){if(window.__paPractice)return;updateHp(m.hp);updateCharge(m.charge||[0,0]);$('roundState').textContent=m.winner===playerIndex?'VICTÒRIA 🏆':'DERROTA 💀';$('rematch').classList.remove('hidden');$('avatar'+m.winner).classList.add('winner-dance');$('avatar'+(1-m.winner)).classList.remove('winner-dance');feed(m.winner===playerIndex?'🏆 HAS GUANYAT! A BALLAR!':'T’HAN FET POLS. EL RIVAL CELEBRA!');}
 if(m.type==='peer-left'){players=m.players;$('startOnline').classList.add('hidden');$('startOnline').disabled=true;$('start').disabled=true;$('roundState').textContent='Rival desconnectat';feed('El rival s’ha desconnectat.');}if(m.type==='pong'){latency=Date.now()-m.sent;$('ping').textContent='Ping: '+latency+' ms'}};setInterval(()=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify({type:'ping',sent:Date.now()}))},3000)}let countdownActive=false;
 function runCountdown(){countdownActive=true;const el=$('countdown');el.classList.remove('hidden');let n=3;el.textContent='3';feed('PREPARATS…');const tick=()=>{n--;if(n>0){el.textContent=String(n);$('roundState').textContent=String(n);setTimeout(tick,1000)}else{el.textContent='FIGHT!';$('roundState').textContent='GO!';feed('COMENCEU LA BATALLA!');setTimeout(()=>{el.classList.add('hidden');countdownActive=false;},650)}};setTimeout(tick,1000);}
-function selectedChar(){return $('character').value}function send(m){if(countdownActive&&m.type==='action')return;if(ws&&ws.readyState===1)ws.send(JSON.stringify(m));else feed('No hi ha connexió al servidor.')}function feed(t){$('feed').textContent=t}function renderChars(list=[]){for(let i=0;i<2;i++){let c=chars[list[i]]||chars[i===0?'puigdemont':'sanchez'];$('portrait'+i).textContent=c.emoji;$('name'+i).textContent=c.name;$('avatar'+i).textContent=c.emoji}}function updateHp(hp){if(!hp)return;for(let i=0;i<2;i++){$('hp'+i).style.width=hp[i]+'%';$('hp'+i+'text').textContent=hp[i]}}
+function selectedChar(){return $('character').value}function send(m){if(countdownActive&&m.type==='action')return;if(window.__paPractice&&m.type==='action'){window.dispatchEvent(new CustomEvent('pa-practice-action',{detail:m}));return}if(ws&&ws.readyState===1)ws.send(JSON.stringify(m));else feed('No hi ha connexió al servidor.')}function feed(t){$('feed').textContent=t}function renderChars(list=[]){for(let i=0;i<2;i++){let c=chars[list[i]]||chars[i===0?'puigdemont':'sanchez'];$('portrait'+i).textContent=c.emoji;$('name'+i).textContent=c.name;$('avatar'+i).textContent=c.emoji}}function updateHp(hp){if(!hp)return;for(let i=0;i<2;i++){$('hp'+i).style.width=hp[i]+'%';$('hp'+i+'text').textContent=hp[i]}}
 function updateCharge(c){const mine=c[playerIndex]||0;$('charge0').style.width=Math.max(0,Math.min(100,mine))+'%';const selected=chars[$('character').value]||chars.puigdemont;$('rareButton').textContent=( $('character').value==='puigdemont' ? '🌟 COP POTENT DE FALÇ' : '🌟 '+selected.rare );$('rareButton').disabled=mine<100;$('rareStatus').textContent=mine>=100?'CARREGADA! Prem K per activar-la.':`Carrega-la amb ${Math.ceil((100-mine)/12.5)} cops més.`}
 $('create').onclick=()=>{if(!connected)return connect();send({type:'create-room',character:selectedChar()})};$('join').onclick=()=>{if(!connected)return connect();send({type:'join-room',code:$('roomCode').value.trim(),character:selectedChar()})};$('character').onchange=()=>send({type:'select-character',character:selectedChar()});$('start').onclick=()=>{send({type:'start'})};
 $('startOnline').onclick=()=>{if(players!==2){feed('Espera que el teu amic s’uneixi a la sala.');return;}send({type:'start'});};
@@ -281,6 +281,18 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  const observer=new MutationObserver(()=>{active=[updateFighter(0),updateFighter(1)];});
  ['name0','name1'].forEach(id=>observer.observe(document.getElementById(id),{childList:true,characterData:true,subtree:true}));
 
+ // Local practice mode: drive the player's 3D fighter without a server.
+ window.addEventListener('pa-practice-action',ev=>{
+   if(!window.__paPractice)return;
+   const m=ev.detail||{},f=active[0];if(!f)return;
+   const u=f.userData,now=performance.now();
+   if(m.action==='move-left'||m.action==='move-right'){u.moveKey=m.action==='move-left'?'a':'d';u.moveDir=m.action==='move-left'?-1:1;u.moveUntil=now+260;return;}
+   if(m.action==='jump'){u.jumpUntil=now+620;u.jumpStarted=now;return;}
+   if(m.action==='crouch'){u.duckUntil=now+650;return;}
+   if(m.action==='block'){u.blockUntil=m.active===false?0:now+1000;return;}
+   if(m.action==='attack'){u.attackUntil=now+420;u.attackPhase=0;return;}
+   if(m.action==='rare'||m.action==='special'){specialAttack(f);}
+ });
  // Connect server combat messages to 3D hit reactions, KO pose and winner celebration.
  const _wsDescriptor=Object.getOwnPropertyDescriptor(window,'ws');
  function watchSocket(){
