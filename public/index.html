@@ -87,6 +87,32 @@ function beginMove(action){send({type:'action',action});}
 document.addEventListener('keydown',e=>{if(!document.body.classList.contains('in-fight')||['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;const k=e.key.toLowerCase();if(['w','a','s','d','j','k','shift'].includes(k))e.preventDefault();if((k==='a'||k==='d')&&!held.has(k)){held.add(k);beginMove(k==='a'?'move-left':'move-right');if(!moveTimer)moveTimer=setInterval(()=>{if(held.has('a'))beginMove('move-left');if(held.has('d'))beginMove('move-right')},110);return}if(e.repeat)return;if(k==='shift'){send({type:'action',action:'block',active:true});$('avatar'+playerIndex).classList.add('blocking');return}const keys={w:'jump',s:'crouch',j:'attack',k:'rare'};if(keys[k])send({type:'action',action:keys[k]})});
 document.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k==='a'||k==='d'){held.delete(k);if(!held.has('a')&&!held.has('d')&&moveTimer){clearInterval(moveTimer);moveTimer=null}}if(k==='shift'){send({type:'action',action:'block',active:false});$('avatar'+playerIndex).classList.remove('blocking')}});
 $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>{const action=b.dataset.action;if(action==='rare'&&$('rareButton').disabled)return;if(action==='block'){$('avatar'+playerIndex).classList.toggle('blocking');send({type:'action',action:'block',active:$('avatar'+playerIndex).classList.contains('blocking')});return}send({type:'action',action})});renderChars(['puigdemont','sanchez']);updateCharge([0,0]);</script>
+<style>
+/* Always-visible fallback: the fight must not look empty if WebGL/CDN fails. */
+.congress-stage{position:relative}
+#fight3d-fallback{display:none;position:absolute;inset:0;z-index:2;align-items:flex-end;justify-content:space-evenly;gap:3vw;padding:2vh 4vw 1vh;box-sizing:border-box;background:linear-gradient(180deg,#0002,#0005),url('https://upload.wikimedia.org/wikipedia/commons/c/cf/Interior_del_Congreso_de_los_Diputados_de_Espa%C3%B1a.jpg') center 44%/cover no-repeat}
+#fight3d-fallback .fallback-fighter{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0;text-shadow:0 3px 8px #000;font-weight:900}
+#fight3d-fallback .fallback-person{font-size:clamp(76px,17vh,180px);line-height:1;filter:drop-shadow(0 8px 5px #0009)}
+#fight3d-fallback .fallback-name{font-size:clamp(12px,2.2vw,20px);background:#120e20dd;padding:5px 10px;border-radius:9px;margin-top:8px}
+#fight3d-fallback .fallback-vs{align-self:center;font-size:clamp(24px,5vw,58px);font-weight:1000;color:#ffd166;text-shadow:0 3px 10px #000}
+body.in-fight #fight3d-fallback{inset:0}
+</style>
+<script>
+(function(){
+ const stage=document.querySelector('.congress-stage');if(!stage)return;
+ const fallback=document.createElement('div');fallback.id='fight3d-fallback';
+ fallback.innerHTML='<div class="fallback-fighter"><div class="fallback-person" id="fallback-left">🧔🏻‍♂️</div><div class="fallback-name" id="fallback-left-name">Puigdemont</div></div><div class="fallback-vs">VS</div><div class="fallback-fighter"><div class="fallback-person" id="fallback-right">👨🏻‍💼</div><div class="fallback-name" id="fallback-right-name">Pedro Sánchez</div></div>';
+ stage.appendChild(fallback);
+ function showFallback(){fallback.style.display='flex';}
+ window.addEventListener('error',function(e){if(e.message&&/THREE|WebGL|cube|humanoid|renderer|undefined|not a function/i.test(e.message))showFallback();});
+ window.addEventListener('unhandledrejection',showFallback);
+ const three=document.querySelector('script[src*="three.min.js"]');
+ if(!window.THREE){showFallback();if(three)three.addEventListener('load',()=>{if(window.THREE)fallback.style.display='none';});}
+ const names=['fallback-left-name','fallback-right-name'],faces=['fallback-left','fallback-right'];
+ function update(){for(let i=0;i<2;i++){const n=document.getElementById('name'+i)?.textContent|| (i?'Pedro Sánchez':'Puigdemont');document.getElementById(names[i]).textContent=n;document.getElementById(faces[i]).textContent=/puigdemont/i.test(n)?'🧔🏻‍♂️':/abascal/i.test(n)?'🧔🏻':/rufian/i.test(n)?'🤓':/orriols/i.test(n)?'👩🏻‍💼':'👨🏻‍💼';}}
+ update();const observer=new MutationObserver(update);['name0','name1'].forEach(id=>{const el=document.getElementById(id);if(el)observer.observe(el,{childList:true,characterData:true,subtree:true});});
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
 (function(){
