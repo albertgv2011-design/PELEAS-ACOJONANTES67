@@ -169,7 +169,7 @@ body.in-fight #fight3d-fallback{inset:0}
  const head=new T.Group();head.position.set(0,2.72,.02);body.add(head);
  const face=new T.Mesh(new T.BoxGeometry(.62,.78,.48),skin);face.castShadow=true;head.add(face);
  const haircap=new T.Mesh(new T.BoxGeometry(.78,.5,.7),hair);haircap.scale.set(.85,1.15,.8);haircap.position.y=.20;haircap.castShadow=true;head.add(haircap);
- const nose=cube(head,0,-.02,.31,.09,.13,.12,skin);
+ const nose=cube(head,0,-.02,.31,.12,.15,.14,skin);
  for(let side of [-1,1]){cube(head,side*.13,.05,.29,.075,.045,.025,mat(0x17131a));}
  // POLITICIAN SKINS: recognizable hair, beard and glasses on the existing head;
  // the original torso, limbs, pivots and combat animation rig remain unchanged.
@@ -198,7 +198,7 @@ body.in-fight #fight3d-fallback{inset:0}
    oval(head,-.27,-.42,-.005,.11,.25,.14,0x211b20);oval(head,.27,-.42,-.005,.11,.25,.14,0x211b20);
  }
  // Arms swing from shoulders.
- const arms=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);const arm=cube(shoulder,side*.05,-.32,.04,.23,.65,.25,suit);arm.rotation.z=side*.12;const hand=new T.Mesh(new T.SphereGeometry(.15,12,10),skin);hand.position.set(side*.06,-.68,.13);shoulder.add(hand);arms.push(shoulder);}
+ const arms=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);const arm=cube(shoulder,side*.05,-.32,.04,.23,.65,.25,suit);arm.rotation.z=side*.12;const hand=cube(shoulder,side*.06,-.68,.13,.22,.22,.22,skin);hand.castShadow=true;arms.push(shoulder);}
  // Character identity follows the user's voxel designs: angular head, blocky clothes and signature accessories.
  if(id==='rufian'){
    // White shirt and black trousers, as in the supplied voxel reference.
