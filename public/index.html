@@ -157,13 +157,13 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  };
  // Faces toward each other; scale to fit the camera.
  for(const f of Object.values(fighters)){f.visible=false;f.rotation.y=f.userData.baseX<0?.25:-.25;f.scale.setScalar(1.65);}
- function resize(){const w=Math.max(1,stage.clientWidth||window.innerWidth||800),h=Math.max(1,stage.clientHeight||window.innerHeight||500);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.position.set(0,4.3,12.5);camera.lookAt(0,2.15,0);}
+ function resize(){const w=Math.max(1,stage.clientWidth||window.innerWidth||800),h=Math.max(1,stage.clientHeight||window.innerHeight||500);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.position.set(0,4.0,13.8);camera.lookAt(0,1.75,0);}
  if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);window.addEventListener('resize',resize,{passive:true});resize();
  let last=0;
  function animate(t){requestAnimationFrame(animate);const dt=Math.min(.04,(t-last)/1000||0);last=t;const now=performance.now();animateSpecials(now,dt);
  for(const f of Object.values(fighters)){const u=f.userData;u.phase=(u.phase||0)+dt*(u.moveUntil>now?9:3);u.targetX=Number.isFinite(u.targetX)?u.targetX:u.baseX;
  if(u.dead){u.body.rotation.z=T.MathUtils.damp(u.body.rotation.z,.02,5,dt);u.body.position.y=T.MathUtils.damp(u.body.position.y,-.48,5,dt);u.body.rotation.x=T.MathUtils.damp(u.body.rotation.x,.02,5,dt);u.legs.forEach((l,i)=>{l.rotation.x=T.MathUtils.damp(l.rotation.x,i===0?-.1:1.15,6,dt);l.rotation.z=T.MathUtils.damp(l.rotation.z,i===0?-.1:.2,6,dt);});u.arms.forEach((a,i)=>{a.rotation.x=T.MathUtils.damp(a.rotation.x,i===0?-.1:.1,6,dt);a.rotation.z=T.MathUtils.damp(a.rotation.z,i===0?-.8:.8,6,dt);});continue;}
- if(u.moveUntil>now&&u.moveKey){u.targetX=Math.max(-6.8,Math.min(6.8,(Number.isFinite(u.targetX)?u.targetX:f.position.x)+(u.moveKey==='a'?-1:1)*dt*3.5));}f.position.x=T.MathUtils.damp(f.position.x,u.targetX,10,dt);
+ if(u.moveUntil>now&&u.moveKey){f.position.x=Math.max(-5.6,Math.min(5.6,f.position.x+(u.moveKey==='a'?-1:1)*dt*4.2));u.targetX=f.position.x;}else{u.targetX=f.position.x;}
  const moving=now<u.moveUntil,ducking=now<u.duckUntil,jumping=now<u.jumpUntil,attacking=now<u.attackUntil,blocking=now<u.blockUntil,celebrating=now<u.celebrateUntil; if(attacking){const p=1-(u.attackUntil-now)/420;u.attackPhase=Math.max(0,Math.min(1,p));}else u.attackPhase=0;
  const walk=Math.sin(u.phase*2.2),bob=moving?Math.abs(walk)*.11:Math.abs(Math.sin(u.phase))*.018;
  u.body.position.y=T.MathUtils.damp(u.body.position.y,bob,12,dt);
@@ -203,10 +203,10 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
      const starShape=new T.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,rr=i%2?.055:.13,x=-.39+Math.cos(a)*rr,y=.12+Math.sin(a)*rr;i?starShape.lineTo(x,y):starShape.moveTo(x,y);}starShape.closePath();const star=new T.Mesh(new T.ShapeGeometry(starShape),glow(0xffffff));star.position.z=.15;group.add(star);group.userData.kind='estelada-slash';
    }else if(id==='rufian'){
      // A readable 50 euro banknote projectile with a printed denomination.
-     const billMat=new T.MeshBasicMaterial({color:0x80c9a3,side:T.DoubleSide,transparent:true,opacity:.98});
+     const billMat=new T.MeshBasicMaterial({color:0xf3d35b,side:T.DoubleSide,transparent:true,opacity:.98});
      const bill=new T.Mesh(new T.BoxGeometry(1.12,.62,.035),billMat);bill.rotation.z=-.25;group.add(bill);
      const border=new T.Mesh(new T.BoxGeometry(1.02,.52,.012),glow(0xe6f3d4));border.position.z=.025;group.add(border);
-     const billCanvas=document.createElement('canvas');billCanvas.width=256;billCanvas.height=144;const ctx=billCanvas.getContext('2d');ctx.fillStyle='#b7ddbd';ctx.fillRect(0,0,256,144);ctx.strokeStyle='#34785d';ctx.lineWidth=7;ctx.strokeRect(6,6,244,132);ctx.fillStyle='#245b48';ctx.font='bold 52px sans-serif';ctx.fillText('50 €',18,64);ctx.font='bold 17px sans-serif';ctx.fillText('EURO',18,102);ctx.strokeStyle='#5f9c7c';ctx.lineWidth=2;ctx.beginPath();ctx.arc(196,72,34,0,Math.PI*2);ctx.stroke();
+     const billCanvas=document.createElement('canvas');billCanvas.width=256;billCanvas.height=144;const ctx=billCanvas.getContext('2d');ctx.fillStyle='#f3d35b';ctx.fillRect(0,0,256,144);ctx.strokeStyle='#b99524';ctx.lineWidth=7;ctx.strokeRect(6,6,244,132);ctx.fillStyle='#6b5815';ctx.font='bold 64px sans-serif';ctx.fillText('50 €',24,91);ctx.strokeStyle='#d4b842';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(16,112);ctx.lineTo(240,112);ctx.stroke();
      const tex=new T.CanvasTexture(billCanvas);const printed=new T.Mesh(new T.PlaneGeometry(1.08,.58),new T.MeshBasicMaterial({map:tex,transparent:true,side:T.DoubleSide}));printed.position.z=.04;printed.rotation.z=-.25;group.add(printed);group.userData.kind='50-euro-projectile';
    }else if(id==='abascal'){
      // Spanish flag: red-yellow-red horizontal bands carried by the charge.
@@ -227,7 +227,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  const origFeed=window.__pa3dFeed;
  const keyDowns=new Set();
  window.addEventListener('keydown',e=>{if(!document.body.classList.contains('in-fight'))return;const f=active[0];if(!f)return;const u=f.userData,k=e.key.toLowerCase();if(keyDowns.has(k))return;keyDowns.add(k);const now=performance.now();
- if(k==='a'||k==='d'){u.moveUntil=now+10000;u.moveDir=k==='a'?-1:1;u.moveKey=k;}
+ if(k==='a'||k==='d'){u.moveUntil=now+60000;u.moveDir=k==='a'?-1:1;u.moveKey=k;}
  if(k==='s'){u.duckUntil=now+650;}
  if(k==='w'){u.jumpUntil=now+620;u.jumpStarted=now;}
  if(k==='j'){u.attackUntil=now+420;u.attackPhase=0;}
