@@ -299,7 +299,7 @@ body.in-fight #fight3d-fallback{inset:0}
  window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();keyDowns.delete(k);if(!document.body.classList.contains('in-fight'))return;const f=active[playerIndex];if(f&&(k==='a'||k==='d')){f.userData.moveUntil=0;f.userData.moveKey='';}});
  const originalRenderChars=window.renderChars;
  // Existing game defines renderChars locally; observe HUD name changes and switch 3D fighters.
- window.__paRefresh3DFighters=()=>{active=[updateFighter(0),updateFighter(1)];};const observer=new MutationObserver(()=>{window.__paRefresh3DFighters();});
+ window.__paRefresh3DFighters=()=>{if(window.__paPractice){const playerId=document.getElementById('character').value;const botId=window.__paPracticeBotId||'puigdemont';active=[fighters[playerId]||fighters.puigdemont,fighters[botId]||fighters.puigdemont];active.forEach((f,i)=>{f.visible=true;f.position.x=i===0?-3.35:3.35;f.position.y=-.42;f.rotation.y=i===0?.32:-.32;f.userData.baseX=f.position.x;f.userData.targetX=f.position.x;f.userData.moveKey='';f.userData.moveUntil=0;f.userData.dead=false;f.userData.attackUntil=0;f.userData.jumpUntil=0;f.userData.duckUntil=0;f.userData.blockUntil=0;f.scale.setScalar(1.65);});return;}active=[updateFighter(0),updateFighter(1)];};const observer=new MutationObserver(()=>{window.__paRefresh3DFighters();});
  ['name0','name1'].forEach(id=>observer.observe(document.getElementById(id),{childList:true,characterData:true,subtree:true}));
 
  // Local practice mode: drive the player's 3D fighter without a server.
