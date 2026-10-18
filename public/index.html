@@ -178,7 +178,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  renderer.render(scene,camera);}
  requestAnimationFrame(animate);
  function chosenId(i){const n=document.getElementById('name'+i)?.textContent||'';return Object.keys(fighters).find(k=>({sanchez:'Pedro Sánchez',abascal:'Santiago Abascal',rufian:'Gabriel Rufián',puigdemont:'Puigdemont',orriols:'Sílvia Orriols'}[k])===n)|| (i===0?'puigdemont':'sanchez');}
- function updateFighter(i){let id=chosenId(i);if(window.__paPractice){id=i===0?'sanchez':chosenId(0);}if(!window.__pa3dSelected)window.__pa3dSelected=[null,null];const prev=window.__pa3dSelected[i];if(prev)prev.visible=false;const f=fighters[id]||fighters.puigdemont;f.visible=true;const visualLeft=window.__paPractice?i===1:i===0;f.position.x=visualLeft?-2.55:2.55;f.rotation.y=visualLeft?.25:-.25;f.userData.baseX=f.position.x;f.scale.setScalar(1.65);window.__pa3dSelected[i]=f;return f;}
+ function updateFighter(i){let id=chosenId(i);if(window.__paPractice){id=i===0?'sanchez':chosenId(0);}if(!window.__pa3dSelected)window.__pa3dSelected=[null,null];const prev=window.__pa3dSelected[i];if(prev)prev.visible=false;const f=fighters[id]||fighters.puigdemont;f.visible=true;const visualLeft=window.__paPractice?i===1:i===0;f.position.x=visualLeft?-3.35:3.35;f.rotation.y=visualLeft?.32:-.32;f.userData.baseX=f.position.x;f.userData.targetX=f.position.x;f.userData.moveKey='';f.userData.moveUntil=0;f.scale.setScalar(1.65);window.__pa3dSelected[i]=f;return f;}
  Object.values(fighters).forEach(f=>f.visible=false);let active=[updateFighter(0),updateFighter(1)];
 
  // Character-specific special attacks: each uses its own visual motif and motion.
