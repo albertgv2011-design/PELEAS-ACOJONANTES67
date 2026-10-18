@@ -7,7 +7,7 @@
  <radialGradient id="blue"><stop stop-color="#147cff" stop-opacity=".55"/><stop offset="1" stop-color="#147cff" stop-opacity="0"/></radialGradient>
  <radialGradient id="orange"><stop stop-color="#ff722a" stop-opacity=".5"/><stop offset="1" stop-color="#ff722a" stop-opacity="0"/></radialGradient>
  <pattern id="mesh" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M0 0L18 18M18 0L0 18" stroke="#a5b7d2" stroke-opacity=".22" stroke-width="1.4"/></pattern>
- <pattern id="seats" width="28" height="24" patternUnits="userSpaceOnUse"><rect x="2" y="5" width="10" height="13" rx="4.5" fill="#34456d"/><rect x="15" y="4" width="10" height="14" rx="4.5" fill="#a94f34"/><ellipse cx="7" cy="8" rx="2" ry="2.5" fill="#e2c6b0"/><ellipse cx="20" cy="7" rx="2" ry="2.5" fill="#e2c6b0"/><path d="M0 20H28" stroke="#60708c" stroke-width="1.5" opacity=".65"/></pattern>
+ <pattern id="seats" width="31" height="27" patternUnits="userSpaceOnUse"><ellipse cx="8" cy="12" rx="5.5" ry="7" fill="#43547a"/><ellipse cx="23" cy="12" rx="5.5" ry="7" fill="#a95b3b"/><circle cx="8" cy="8" r="2.2" fill="#d8c0aa"/><circle cx="23" cy="8" r="2.2" fill="#d8c0aa"/><path d="M1 21Q15 18 30 21" fill="none" stroke="#536786" stroke-width="1.2" opacity=".7"/></pattern>
  <filter id="blur"><feGaussianBlur stdDeviation="22"/></filter>
 </defs>
 <rect width="1672" height="941" fill="url(#sky)"/>
