@@ -72,6 +72,11 @@ body.in-fight .ability-box button{padding:5px 8px!important;font-size:10px!impor
 body.in-fight .button-row{display:flex!important;flex-wrap:wrap!important;gap:5px!important;margin-top:4px!important}
 body.in-fight .fight-bottom button{box-shadow:none!important;border-radius:5px!important}
 @media(max-width:700px){body.in-fight #game{grid-template-rows:70px minmax(0,1fr) 135px!important}body.in-fight .fight-top{height:70px!important;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr)!important;gap:4px!important;padding:4px!important}body.in-fight .combatant{gap:4px!important}body.in-fight .fight-bottom{height:135px!important;grid-template-columns:minmax(0,1fr) minmax(145px,42%)!important;gap:5px!important;padding:5px!important}body.in-fight .controls-hint{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:3px!important;font-size:9px!important}body.in-fight .ability-box{padding:5px!important;font-size:9px!important}}
+
+/* Final override: hide the lower controls/abilities panel during the fight. */
+body.in-fight #game>.fight-bottom{display:none!important;height:0!important;max-height:0!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden!important}
+body.in-fight #game{grid-template-rows:88px minmax(0,1fr) 0!important}
+@media(max-width:700px){body.in-fight #game{grid-template-rows:70px minmax(0,1fr) 0!important}}
 </style></head><body><main class="wrap"><div class="brand">PELEAS <span style="color:#ff4c94">ACOJONANTES</span></div><p class="sub">EL CAOS HA COMENÇAT · 1 CONTRA 1 ONLINE</p><section id="lobby" class="panel"><div class="row" style="justify-content:space-between"><span class="badge" id="connection">● Desconnectat</span><span class="small" id="ping">Ping: —</span></div><h2>⚔️ Entra a la batalla</h2><label class="small">El teu personatge</label><div class="row" style="margin:8px 0 14px"><select id="character">
 <option value="sanchez">🇲🇦 Pedro Sánchez — Discurs i diplomàcia</option>
 <option value="abascal">🇪🇸 Santiago Abascal — Càrrega patriòtica</option>
