@@ -213,9 +213,15 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
      const flag=new T.Mesh(new T.PlaneGeometry(1.3,.78),glow(0xc91f32));flag.position.x=.12;group.add(flag);
      const yellow=new T.Mesh(new T.PlaneGeometry(1.3,.32),glow(0xffc928));yellow.position.z=.025;group.add(yellow);
      const shield=new T.Mesh(new T.CircleGeometry(.12,8),glow(0xb82128));shield.position.set(-.25,.02,.05);group.add(shield);group.userData.kind='spanish-flag-charge';
-   }else{
+   }else if(id==='sanchez'){
+     // Morocco flag is exclusive to Pedro Sánchez.
      const flag=new T.Mesh(new T.PlaneGeometry(1.25,.8),glow(0xc52234));flag.position.x=.15;group.add(flag);
-     const star=new T.Mesh(new T.ShapeGeometry((()=>{const s=new T.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,r=i%2?.12:.28;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?s.lineTo(x,y):s.moveTo(x,y);}s.closePath();return s;})()),glow(0x16854c));star.position.z=.03;group.add(star);group.userData.kind='morocco-flag-charge';
+     const starShape=new T.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,r=i%2?.12:.28,x=Math.cos(a)*r,y=Math.sin(a)*r;i?starShape.lineTo(x,y):starShape.moveTo(x,y);}starShape.closePath();
+     const star=new T.Mesh(new T.ShapeGeometry(starShape),glow(0x16854c));star.position.z=.03;group.add(star);group.userData.kind='morocco-flag-charge';
+   }else{
+     // Unknown fighter IDs must never fall back to Pedro's Morocco flag.
+     const ring=new T.Mesh(new T.TorusGeometry(.8,.12,8,32),glow(0xb76cff));ring.rotation.y=Math.PI/2;group.add(ring);
+     const core=new T.Mesh(new T.SphereGeometry(.28,12,10),glow(0x72e6ff));group.add(core);group.userData.kind='generic-energy-burst';
    }
    specialFx.push({group,start:now,duration:1000,owner:f});
  }
