@@ -162,28 +162,36 @@ body.in-fight #fight3d-fallback{inset:0}
  const face=new T.Mesh(new T.SphereGeometry(.38,20,16),skin);face.scale.set(.8,1.12,.76);face.castShadow=true;head.add(face);
  const haircap=new T.Mesh(new T.SphereGeometry(.39,18,12,0,Math.PI*2,0,Math.PI*.55),hair);haircap.scale.set(.85,1.15,.8);haircap.position.y=.08;head.add(haircap);
  const nose=cube(head,0,-.02,.31,.09,.13,.12,skin);
- for(let side of [-1,1]){const eye=cube(head,side*.13,.05,.29,.075,.045,.025,mat(0x17131a));}
+ for(let side of [-1,1]){cube(head,side*.13,.05,.29,.075,.045,.025,mat(0x17131a));}
+ // POLITICIAN SKINS: recognizable hair, beard and glasses on the existing head;
+ // the original torso, limbs, pivots and combat animation rig remain unchanged.
+ const oval=(parent,x,y,z,sx,sy,sz,color)=>{const m=new T.Mesh(new T.SphereGeometry(1,16,12),mat(color));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;parent.add(m);return m;};
+ const beardColor=(id==='puigdemont')?0x898984:(id==='abascal')?0x302923:(id==='rufian')?0x3b302a:0x6d625b;
+ if(id==='puigdemont'){
+   haircap.material=mat(0xb8b8b0);haircap.scale.set(1.02,1.05,.9);haircap.position.set(-.035,.11,-.015);
+   oval(head,-.19,.14,-.015,.22,.12,.22,0xc2c2ba);oval(head,.12,.17,-.025,.28,.12,.22,0xc2c2ba);
+   oval(head,0,-.22,.22,.27,.24,.18,beardColor);oval(head,-.19,-.10,.20,.10,.18,.12,beardColor);oval(head,.19,-.10,.20,.10,.18,.12,beardColor);
+ }else if(id==='abascal'){
+   // Bald scalp and prominent dark full beard.
+   haircap.scale.set(.84,.58,.78);haircap.position.y=.13;
+   oval(head,0,-.22,.22,.29,.31,.20,beardColor);oval(head,-.20,-.08,.20,.12,.21,.13,beardColor);oval(head,.20,-.08,.20,.12,.21,.13,beardColor);oval(head,0,-.39,.24,.20,.12,.13,beardColor);
+ }else if(id==='rufian'){
+   haircap.scale.set(.87,.83,.8);
+   oval(head,0,-.22,.22,.26,.23,.18,beardColor);oval(head,-.18,-.10,.20,.10,.16,.12,beardColor);oval(head,.18,-.10,.20,.10,.16,.12,beardColor);
+   const glasses=mat(0x151515,.25,.15);
+   for(const side of [-1,1]){const lens=new T.Mesh(new T.TorusGeometry(.105,.018,6,18),glasses);lens.position.set(side*.13,.055,.34);head.add(lens);}
+   cube(head,0,.055,.345,.09,.022,.025,glasses);
+ }else if(id==='sanchez'){
+   haircap.scale.set(.88,.82,.8);
+   oval(head,0,-.23,.22,.27,.20,.17,0x77716b);oval(head,-.18,-.10,.20,.09,.14,.11,0x77716b);oval(head,.18,-.10,.20,.09,.14,.11,0x77716b);
+ }else if(id==='orriols'){
+   haircap.scale.set(.98,1.12,.88);
+   oval(head,-.29,-.13,.02,.12,.48,.15,0x211b20);oval(head,.29,-.13,.02,.12,.48,.15,0x211b20);
+   oval(head,-.27,-.42,-.005,.11,.25,.14,0x211b20);oval(head,.27,-.42,-.005,.11,.25,.14,0x211b20);
+ }
  // Arms swing from shoulders.
  const arms=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);const arm=cube(shoulder,side*.05,-.32,.04,.23,.65,.25,suit);arm.rotation.z=side*.12;const hand=new T.Mesh(new T.SphereGeometry(.15,12,10),skin);hand.position.set(side*.06,-.68,.13);shoulder.add(hand);arms.push(shoulder);}
- // Cosmetic skins only: keep the original character geometry and animation rig unchanged.
- if(kind==='euro'){
-   const noteMat=mat(0xf1d94b),ink=mat(0x28251b);
-   const note=cube(body,.02,2.0,.31,.42,.25,.025,noteMat);note.rotation.z=-.08;
-   // A clear dark “50 €” mark on the yellow banknote.
-   const label=cube(body,.02,2.0,.33,.27,.045,.012,ink);label.rotation.z=-.08;
- }else if(kind==='estelada'){
-   // Small blue-and-yellow star detail on the existing suit; no change to the body silhouette.
-   const patch=cube(body,.22,1.95,.263,.19,.16,.018,mat(0x1769dc));
-   const starShape=new T.Shape();for(let q=0;q<10;q++){const a=q*Math.PI/5-Math.PI/2,rr=q%2?.018:.045,xx=.22+Math.cos(a)*rr,yy=1.95+Math.sin(a)*rr;q?starShape.lineTo(xx,yy):starShape.moveTo(xx,yy);}starShape.closePath();
-   const star=new T.Mesh(new T.ShapeGeometry(starShape),mat(0xffd52a));star.position.z=.278;body.add(star);
- }else if(kind==='spain'){
-   cube(body,.22,1.95,.263,.19,.16,.018,mat(0xc92132));
-   cube(body,.22,1.95,.278,.16,.045,.012,mat(0xffd43b));
- }else if(kind==='morocco'){
-   cube(body,.22,1.95,.263,.19,.16,.018,mat(0xc92132));
-   const starShape=new T.Shape();for(let q=0;q<10;q++){const a=q*Math.PI/5-Math.PI/2,rr=q%2?.018:.045,xx=.22+Math.cos(a)*rr,yy=1.95+Math.sin(a)*rr;q?starShape.lineTo(xx,yy):starShape.moveTo(xx,yy);}starShape.closePath();
-   const star=new T.Mesh(new T.ShapeGeometry(starShape),mat(0x16834b));star.position.z=.278;body.add(star);
- }
+ // Character identity is carried by face, hair, beard and the existing costume colors.
  cape(body,colors.cape||0x9b1b2d,kind);
  // Stand with a readable fighting pose.
  arms[0].rotation.z=-.42;arms[0].rotation.x=-.5;arms[1].rotation.z=.55;arms[1].rotation.x=-.7;
