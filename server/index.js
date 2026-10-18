@@ -57,22 +57,31 @@ wss.on('connection', ws => {
       broadcast(room,{type:'characters',characters:room.players.map(p=>p.character||'rex')});
     } else if (m.type === 'start') {
       if(room.players.length!==2) return send(ws,{type:'error',message:'Calen dos jugadors reals.'});
-      room.state='fighting'; room.fight={hp:[100,100],started:Date.now()};
-      broadcast(room,{type:'fight-start',hp:[100,100],started:room.fight.started});
+      room.state='fighting'; room.fight={hp:[100,100],charge:[0,0],hits:[0,0],blocking:[false,false],positions:[20,80],started:Date.now()};
+      broadcast(room,{type:'fight-start',hp:[100,100],charge:[0,0],started:room.fight.started});
     } else if (m.type === 'action' && room.state==='fighting') {
       const i=ws.playerIndex===1?1:0; const opponent=1-i;
-      if (!['move-left','move-right','jump','attack','special','finisher'].includes(m.action)) return;
-      if (m.action==='attack'||m.action==='special'||m.action==='finisher') {
-        const dmg=m.action==='attack'?8:m.action==='special'?16:30;
-        room.fight.hp[opponent]=Math.max(0,room.fight.hp[opponent]-dmg);
-        broadcast(room,{type:'combat-event',player:i,action:m.action,hp:room.fight.hp.slice(),positions:room.fight.positions||[20,80]});
-        if(room.fight.hp[opponent]===0){room.state='finished'; broadcast(room,{type:'fight-over',winner:i,hp:room.fight.hp.slice()});}
-      } else {
-        room.fight.positions=room.fight.positions||[20,80];
-        room.fight.positions[i]=Math.max(5,Math.min(95,room.fight.positions[i]+(m.action==='move-left'?-4:m.action==='move-right'?4:0)));
-        broadcast(room,{type:'combat-event',player:i,action:m.action,hp:room.fight.hp.slice(),positions:room.fight.positions.slice()});
+      if (!['move-left','move-right','jump','crouch','attack','rare','block'].includes(m.action)) return;
+      if (m.action==='block') {
+        room.fight.blocking[i]=m.active!==false;
+        return broadcast(room,{type:'combat-event',player:i,action:'block',hp:room.fight.hp.slice(),charge:room.fight.charge.slice(),blocking:room.fight.blocking.slice(),positions:room.fight.positions.slice()});
       }
-    } else if(m.type==='rematch') { if(room.players.length===2){room.state='fighting';room.fight={hp:[100,100],started:Date.now(),positions:[20,80]};broadcast(room,{type:'fight-start',hp:[100,100],started:room.fight.started,positions:[20,80]});} }
+      if (m.action==='attack'||m.action==='rare') {
+        if (m.action==='rare' && room.fight.charge[i] < 100) return send(ws,{type:'error',message:'L’habilitat rara encara no està carregada: encerta 8 cops bàsics.'});
+        let dmg=m.action==='attack'?8:32;
+        if (m.action==='rare') room.fight.charge[i]=0;
+        if (m.action==='attack') room.fight.charge[i]=Math.min(100,room.fight.charge[i]+12.5);
+        const blocked=room.fight.blocking[opponent];
+        if (blocked) dmg=Math.ceil(dmg*0.2);
+        room.fight.hp[opponent]=Math.max(0,room.fight.hp[opponent]-dmg);
+        if (m.action==='attack') room.fight.hits[i]++;
+        broadcast(room,{type:'combat-event',player:i,action:m.action,hp:room.fight.hp.slice(),charge:room.fight.charge.slice(),blocking:room.fight.blocking.slice(),positions:room.fight.positions.slice(),damage:dmg});
+        if(room.fight.hp[opponent]===0){room.state='finished'; broadcast(room,{type:'fight-over',winner:i,hp:room.fight.hp.slice(),charge:room.fight.charge.slice()});}
+      } else {
+        room.fight.positions[i]=Math.max(5,Math.min(95,room.fight.positions[i]+(m.action==='move-left'?-4:m.action==='move-right'?4:0)));
+        broadcast(room,{type:'combat-event',player:i,action:m.action,hp:room.fight.hp.slice(),charge:room.fight.charge.slice(),blocking:room.fight.blocking.slice(),positions:room.fight.positions.slice()});
+      }
+    } else if(m.type==='rematch') { if(room.players.length===2){room.state='fighting';room.fight={hp:[100,100],charge:[0,0],hits:[0,0],blocking:[false,false],started:Date.now(),positions:[20,80]};broadcast(room,{type:'fight-start',hp:[100,100],charge:[0,0],started:room.fight.started,positions:[20,80]});} }
     else if(m.type==='ping') send(ws,{type:'pong',sent:m.sent,serverTime:Date.now()});
   });
   ws.on('close',()=>leave(ws)); ws.on('error',()=>leave(ws));
