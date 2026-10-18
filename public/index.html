@@ -162,62 +162,29 @@ body.in-fight #fight3d-fallback{inset:0}
  const face=new T.Mesh(new T.SphereGeometry(.38,20,16),skin);face.scale.set(.8,1.12,.76);face.castShadow=true;head.add(face);
  const haircap=new T.Mesh(new T.SphereGeometry(.39,18,12,0,Math.PI*2,0,Math.PI*.55),hair);haircap.scale.set(.85,1.15,.8);haircap.position.y=.08;head.add(haircap);
  const nose=cube(head,0,-.02,.31,.09,.13,.12,skin);
- // Distinct sculpted silhouettes so each fighter is identifiable before reading the HUD.
- const darkHair=mat(0x211c1b),silverHair=mat(0xaaa9a2),beardMat=mat(kind==='puigdemont'?0x8a8983:kind==='abascal'?0x292522:0x352821),browMat=mat(kind==='puigdemont'?0x77736d:0x342721);
- const detailSphere=(x,y,z,sx,sy,sz,m)=>{const o=new T.Mesh(new T.SphereGeometry(1,16,12),m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;head.add(o);return o;};
- // Hairlines differ by person: close-cropped, shaved, swept grey, or long side locks.
- if(kind==='spain'){
-   // Abascal: shaved scalp and a broad, unmistakable full beard.
-   haircap.scale.set(.84,.74,.78);haircap.position.y=.11;
-   detailSphere(0,-.22,.22,.29,.31,.22,beardMat);
-   detailSphere(-.22,-.09,.20,.12,.22,.14,beardMat);detailSphere(.22,-.09,.20,.12,.22,.14,beardMat);
-   detailSphere(0,-.39,.25,.2,.12,.12,beardMat);
- }else if(kind==='euro'){
-   // Rufián: short dark hair, shaped beard and black rectangular glasses.
-   haircap.scale.set(.88,.9,.82);
-   detailSphere(0,-.22,.23,.27,.25,.19,beardMat);
-   detailSphere(-.2,-.08,.22,.1,.17,.12,beardMat);detailSphere(.2,-.08,.22,.1,.17,.12,beardMat);
-   const glasses=mat(0x17171a,.3,.2);
-   for(const side of [-1,1]){const lens=new T.Mesh(new T.TorusGeometry(.105,.018,6,20),glasses);lens.position.set(side*.13,.055,.34);head.add(lens);}
-   cube(head,0,.055,.345,.09,.025,.025,glasses);
- }else if(kind==='estelada'&&id==='puigdemont'){
-   // Puigdemont: swept-back silver hair and a grey beard.
-   haircap.material=silverHair;haircap.scale.set(1.04,1.08,.92);haircap.position.set(-.04,.11,-.015);
-   detailSphere(-.18,.15,.05,.2,.14,.23,silverHair);detailSphere(.1,.2,-.02,.28,.13,.22,silverHair);
-   detailSphere(0,-.22,.23,.27,.26,.19,beardMat);
-   detailSphere(-.19,-.1,.2,.1,.18,.13,beardMat);detailSphere(.19,-.1,.2,.1,.18,.13,beardMat);
- }else if(kind==='estelada'&&id==='orriols'){
-   // Orriols: long dark hair framing both sides of the face.
-   haircap.scale.set(.98,1.15,.9);
-   detailSphere(-.29,-.15,.02,.13,.53,.16,darkHair);detailSphere(.29,-.15,.02,.13,.53,.16,darkHair);
-   detailSphere(-.27,-.42,-.01,.12,.28,.14,darkHair);detailSphere(.27,-.42,-.01,.12,.28,.14,darkHair);
- }else{
-   // Sánchez: neat, close-cropped dark hair and defined sideburns.
-   haircap.scale.set(.86,.86,.82);
-   detailSphere(-.29,-.03,.04,.065,.18,.09,darkHair);detailSphere(.29,-.03,.04,.065,.18,.09,darkHair);
- }
- for(let side of [-1,1]){
-   cube(head,side*.13,.05,.29,.075,.045,.025,mat(0x17131a));
-   const brow=cube(head,side*.13,.13,.30,.12,.035,.035,browMat);brow.rotation.z=side*-.08;
- }
+ for(let side of [-1,1]){const eye=cube(head,side*.13,.05,.29,.075,.045,.025,mat(0x17131a));}
  // Arms swing from shoulders.
- const arms=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);cube(shoulder,side*.04,-.22,.02,.23,.46,.25,suit);const elbow=new T.Group();elbow.position.set(side*.05,-.42,.04);shoulder.add(elbow);cube(elbow,0,-.16,.04,.19,.36,.2,suit);const hand=new T.Mesh(new T.SphereGeometry(.145,14,12),skin);hand.position.set(0,-.36,.12);hand.castShadow=true;elbow.add(hand);shoulder.userData.elbow=elbow;shoulder.userData.side=side;arms.push(shoulder);}
- cape(body,colors.cape||0x9b1b2d,kind);
- // Character silhouettes/accessories: distinguish the fighters even at a glance.
- const badgeMat=mat(kind==='estelada'?0x1769dc:kind==='spain'?0xd92732:kind==='euro'?0x3d946a:kind==='morocco'?0x9e1527:0x27334b);
- if(kind==='morocco'){
-   const flag=cube(body,.64,1.72,-.03,.045,.78,.48,mat(0xc81d32));cube(body,.665,1.72,.22,.018,.3,.018,mat(0x18834c));
-   const starShape=new T.Shape();for(let q=0;q<10;q++){const a=q*Math.PI/5-Math.PI/2,rr=q%2?.035:.09,xx=.665+Math.cos(a)*rr,yy=1.72+Math.sin(a)*rr;q?starShape.lineTo(xx,yy):starShape.moveTo(xx,yy);}starShape.closePath();const star=new T.Mesh(new T.ShapeGeometry(starShape),mat(0x18834c));star.position.z=.245;body.add(star);
- }else if(kind==='spain'){
-   cube(body,.63,1.73,-.02,.045,.82,.48,mat(0xc91f32));cube(body,.66,1.73,.23,.018,.3,.018,mat(0xffc928));
- }else if(kind==='euro'){
-   const note=cube(body,.0,2.02,.29,.38,.22,.025,mat(0x83c6a0));note.rotation.z=-.12;
-   const tattoo=cube(body,.32,1.85,.255,.19,.11,.025,mat(0xdad4c9));tattoo.rotation.z=-.15;
+ const arms=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);const arm=cube(shoulder,side*.05,-.32,.04,.23,.65,.25,suit);arm.rotation.z=side*.12;const hand=new T.Mesh(new T.SphereGeometry(.15,12,10),skin);hand.position.set(side*.06,-.68,.13);shoulder.add(hand);arms.push(shoulder);}
+ // Cosmetic skins only: keep the original character geometry and animation rig unchanged.
+ if(kind==='euro'){
+   const noteMat=mat(0xf1d94b),ink=mat(0x28251b);
+   const note=cube(body,.02,2.0,.31,.42,.25,.025,noteMat);note.rotation.z=-.08;
+   // A clear dark “50 €” mark on the yellow banknote.
+   const label=cube(body,.02,2.0,.33,.27,.045,.012,ink);label.rotation.z=-.08;
  }else if(kind==='estelada'){
-   const flag=cube(body,.64,1.73,-.03,.045,.82,.48,mat(0xc91f32));cube(body,.665,1.73,.22,.018,.78,.018,mat(0xffd333));
-   const triangle=new T.Mesh(new T.BufferGeometry(),mat(0x1769dc));const sh=new T.Shape();sh.moveTo(0,1.99);sh.lineTo(.28,1.73);sh.lineTo(0,1.47);sh.closePath();const tri=new T.Mesh(new T.ShapeGeometry(sh),mat(0x1769dc));tri.position.set(.665,0,.245);body.add(tri);
-   const starShape=new T.Shape();for(let q=0;q<10;q++){const a=q*Math.PI/5-Math.PI/2,rr=q%2?.025:.065,xx=.04+Math.cos(a)*rr,yy=1.73+Math.sin(a)*rr;q?starShape.lineTo(xx,yy):starShape.moveTo(xx,yy);}starShape.closePath();const star=new T.Mesh(new T.ShapeGeometry(starShape),mat(0xffffff));star.position.z=.26;body.add(star);
+   // Small blue-and-yellow star detail on the existing suit; no change to the body silhouette.
+   const patch=cube(body,.22,1.95,.263,.19,.16,.018,mat(0x1769dc));
+   const starShape=new T.Shape();for(let q=0;q<10;q++){const a=q*Math.PI/5-Math.PI/2,rr=q%2?.018:.045,xx=.22+Math.cos(a)*rr,yy=1.95+Math.sin(a)*rr;q?starShape.lineTo(xx,yy):starShape.moveTo(xx,yy);}starShape.closePath();
+   const star=new T.Mesh(new T.ShapeGeometry(starShape),mat(0xffd52a));star.position.z=.278;body.add(star);
+ }else if(kind==='spain'){
+   cube(body,.22,1.95,.263,.19,.16,.018,mat(0xc92132));
+   cube(body,.22,1.95,.278,.16,.045,.012,mat(0xffd43b));
+ }else if(kind==='morocco'){
+   cube(body,.22,1.95,.263,.19,.16,.018,mat(0xc92132));
+   const starShape=new T.Shape();for(let q=0;q<10;q++){const a=q*Math.PI/5-Math.PI/2,rr=q%2?.018:.045,xx=.22+Math.cos(a)*rr,yy=1.95+Math.sin(a)*rr;q?starShape.lineTo(xx,yy):starShape.moveTo(xx,yy);}starShape.closePath();
+   const star=new T.Mesh(new T.ShapeGeometry(starShape),mat(0x16834b));star.position.z=.278;body.add(star);
  }
+ cape(body,colors.cape||0x9b1b2d,kind);
  // Stand with a readable fighting pose.
  arms[0].rotation.z=-.42;arms[0].rotation.x=-.5;arms[1].rotation.z=.55;arms[1].rotation.x=-.7;
  root.userData={body,head,arms,legs,kind,id,baseX:x,phase:Math.random()*5,attackUntil:0,blockUntil:0,duckUntil:0,hitUntil:0,dead:false,celebrate:false};return root;}
