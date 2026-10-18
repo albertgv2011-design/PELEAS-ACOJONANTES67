@@ -43,6 +43,11 @@ body.in-fight #fight3d{position:absolute!important;inset:0!important;width:100%!
 body.in-fight .congress-stage>.floor{z-index:1!important;pointer-events:none!important}
 body.in-fight .congress-stage>.congress-sign{z-index:4!important;pointer-events:none!important}
 body.in-fight .congress-stage>#fight3d-fallback{z-index:5!important}
+
+/* Immersive fight view: remove the bottom controls panel so the Congress arena fills the screen. */
+body.in-fight #game{grid-template-rows:88px minmax(0,1fr) 0!important}
+body.in-fight .fight-bottom{display:none!important}
+@media(max-width:700px){body.in-fight #game{grid-template-rows:70px minmax(0,1fr) 0!important}}
 /* Actual bundled arena artwork; keep fighter models and controls untouched. */
 body.in-fight .congress-stage{
  background:#120d10 url('./926cf343-3cc2-4f21-adae-031288bbebbb.png') center 78%/cover no-repeat!important;
@@ -197,7 +202,7 @@ body.in-fight #fight3d-fallback{inset:0}
  orriols:humanoid('orriols',-3.2,{skin:0xd7a28b,suit:0x282039,tie:0x4c1f4e,hair:0x241d2d,cape:0x33224d},'estelada')
  };
  // Faces toward each other; scale to fit the camera.
- for(const f of Object.values(fighters)){f.visible=false;f.rotation.y=f.userData.baseX<0?.25:-.25;f.position.y=-.42;f.scale.setScalar(1.65);}
+ for(const f of Object.values(fighters)){f.visible=false;f.rotation.y=f.userData.baseX<0?.25:-.25;f.position.y=-.85;f.scale.setScalar(1.65);}
  function resize(){const w=Math.max(1,stage.clientWidth||window.innerWidth||800),h=Math.max(1,stage.clientHeight||window.innerHeight||500);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.position.set(0,4.0,13.8);camera.lookAt(0,3.0,0);}
  if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);window.addEventListener('resize',resize,{passive:true});resize();
  let last=0;
@@ -309,7 +314,7 @@ body.in-fight #fight3d-fallback{inset:0}
  if(m.action==='block')u.blockUntil=now+800;
 }}
  if(m.type==='fight-over'){active.forEach((f,i)=>{if(!f)return;f.userData.dead=i!==m.winner;f.userData.celebrateUntil=i===m.winner?performance.now()+100000:0;if(i===m.winner){f.userData.dead=false;f.userData.celebrate=true;}});}
- if(m.type==='fight-start'){active.forEach((f,i)=>{if(f){const left=window.__paPractice?i===1:i===0;f.position.x=left?-3.35:3.35;f.userData.baseX=f.position.x;f.userData.targetX=f.position.x;f.userData.moveKey='';f.userData.dead=false;f.userData.celebrate=false;f.userData.celebrateUntil=0;f.userData.duckUntil=0;f.userData.jumpUntil=0;f.userData.moveUntil=0;f.userData.attackUntil=0;f.userData.blockUntil=0;f.position.y=-.42;f.rotation.z=0;}});}
+ if(m.type==='fight-start'){active.forEach((f,i)=>{if(f){const left=window.__paPractice?i===1:i===0;f.position.x=left?-3.35:3.35;f.userData.baseX=f.position.x;f.userData.targetX=f.position.x;f.userData.moveKey='';f.userData.dead=false;f.userData.celebrate=false;f.userData.celebrateUntil=0;f.userData.duckUntil=0;f.userData.jumpUntil=0;f.userData.moveUntil=0;f.userData.attackUntil=0;f.userData.blockUntil=0;f.position.y=-.85;f.rotation.z=0;}});}
  }catch(err){}};clearInterval(check);}}catch(e){}},250);
  }
  watchSocket();
