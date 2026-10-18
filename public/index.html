@@ -110,9 +110,39 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  cube(scene,0,.5,-7,8,1.4,2,wood);cube(scene,0,1.3,-7,4.4,1.7,1.3,gold);cube(scene,0,1.42,-6.25,3.9,1.3,.08,wood);
  for(let i=-5;i<=5;i++){const x=i*1.9;cube(scene,x,1.2,-8.8,1.55,1.1,.7,seat);cube(scene,x,1.82,-9.15,1.55,.16,.18,gold);}
  for(let side of [-1,1]){for(let level=0;level<3;level++){cube(scene,side*8,1.1+level*1.35,-5-level*.2,6,.35,4,wood);for(let x=-2;x<=2;x++){cube(scene,side*8+x*1.05,1.55+level*1.35,-4.5-level*.2,.7,.65,.65,seat);}}for(let x=-1;x<=1;x++){const col=cube(scene,side*12,4.1,-7+x*0,1,7,.9,wood);col.position.x=side*12;}}
- // Stylized miniature crowd silhouettes behind the fighters.
+ // Congress chamber dressing: timber panelling, gilded pilasters, semicircular red benches and a central dais.
+ const wall=cube(scene,0,4.8,-10.8,29,10,.5,wood);wall.material=mat(0x4a2a20);
+ for(let x=-13;x<=13;x+=3.25){
+   cube(scene,x,4.7,-10.45,.16,8.5,.2,gold);
+   cube(scene,x,8.85,-10.35,2.8,.28,.32,gold);
+   cube(scene,x,1.0,-10.35,2.7,.22,.3,gold);
+ }
+ // Tiered central speaker's platform and broad carpeted steps.
+ cube(scene,0,.1,-7.3,9,.25,3.6,red);
+ for(let n=0;n<4;n++)cube(scene,0,.18+n*.22,-6.3-n*.43,8.2-n*.85,.18,.65,wood);
+ cube(scene,0,1.05,-8.5,5.6,1.45,1.1,wood);cube(scene,0,1.84,-8.92,5.2,.14,.18,gold);
+ // Curved parliamentary seating in three tiers, turned toward the speaker's rostrum.
  const crowdMat=mat(0x171723),crowdSuit=mat(0x252b39);
- for(let row=0;row<2;row++)for(let i=0;i<18;i++){const x=(i-8.5)*.78,z=-5.8-row*1.5;const g=new T.Group();g.position.set(x,0,z);scene.add(g);const torso=cube(g,0,1.2,0,.36,.72,.28,crowdSuit);const head=new T.Mesh(new T.SphereGeometry(.16,8,8),crowdMat);head.position.y=1.72;g.add(head);}
+ for(let tier=0;tier<3;tier++){
+   const radius=5.5+tier*1.55,z=-5.4-tier*.7,y=.55+tier*.72;
+   for(let j=0;j<19;j++){
+     const a=(-1.22+j*2.44/18),x=Math.sin(a)*radius,zz=z-Math.cos(a)*radius*.36;
+     const bench=cube(scene,x,y,zz,1.02,.28,.75,seat);bench.rotation.y=a*.48;
+     const back=cube(scene,x,y+.32,zz-.17,1.02,.42,.16,wood);back.rotation.y=a*.48;
+     const g=new T.Group();g.position.set(x,y+.35,zz+.03);g.rotation.y=a*.48;scene.add(g);
+     cube(g,0,.45,0,.28,.55,.24,crowdSuit);
+     const head=new T.Mesh(new T.SphereGeometry(.145,12,10),crowdMat);head.position.set(0,.85,.025);g.add(head);
+   }
+ }
+ // Brass balustrades and the recognizable upper public gallery.
+ for(let side of [-1,1]){
+   cube(scene,side*10,2.8,-7.1,.18,2.6,6.8,gold);
+   cube(scene,side*10,4.15,-7.1,.24,.18,7.2,gold);
+   for(let j=0;j<13;j++)cube(scene,side*(4.5+j*.9),3.45,-8.1,.055,1.1,.055,gold);
+ }
+ // Spanish and EU flags flank the speaker's platform.
+ function chamberFlag(x,color,accent){const pole=cube(scene,x,3.15,-9.4,.055,3.1,.055,gold);const cloth=cube(scene,x+(x<0?.48:-.48),3.65,-9.4,.9,.62,.035,mat(color));cube(scene,x+(x<0?.48:-.48),3.65,-9.37,.9,.2,.025,mat(accent));}
+ chamberFlag(-4.6,0xc52234,0xffcf36);chamberFlag(4.6,0x173f8a,0xffd53d);
  // Flag capes are cloth-like colored panels with emblem stripes.
  function cape(parent,color,kind){const geo=new T.PlaneGeometry(1.5,2.25,8,10);const m=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.7,emissive:color,emissiveIntensity:.08});const mesh=new T.Mesh(geo,m);mesh.position.set(0,1.8,-.34);mesh.rotation.y=.15;parent.add(mesh);mesh.userData.cape=true; if(kind==='morocco'){const star=new T.Group();for(let i=0;i<5;i++){const a=i*Math.PI*2/5;const line=cube(star,Math.cos(a)*.17,Math.sin(a)*.17,.015,.36,.025,.025,mat(0x167447));line.rotation.z=a+Math.PI/2;}star.position.set(0,1.8,-.29);parent.add(star);}if(kind==='estelada'){const stripe=cube(parent,0,1.8,-.27,1.5,.28,.025,mat(0xffd53d));stripe.position.x=.03;}}
  function humanoid(id,x,colors,kind){const root=new T.Group();root.position.set(x,0,0);scene.add(root);const body=new T.Group();root.add(body);
@@ -126,7 +156,44 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  const face=new T.Mesh(new T.SphereGeometry(.38,20,16),skin);face.scale.set(.8,1.12,.76);face.castShadow=true;head.add(face);
  const haircap=new T.Mesh(new T.SphereGeometry(.39,18,12,0,Math.PI*2,0,Math.PI*.55),hair);haircap.scale.set(.85,1.15,.8);haircap.position.y=.08;head.add(haircap);
  const nose=cube(head,0,-.02,.31,.09,.13,.12,skin);
- for(let side of [-1,1]){const eye=cube(head,side*.13,.05,.29,.075,.045,.025,mat(0x17131a));}
+ // Distinct sculpted silhouettes so each fighter is identifiable before reading the HUD.
+ const darkHair=mat(0x211c1b),silverHair=mat(0xaaa9a2),beardMat=mat(kind==='puigdemont'?0x8a8983:kind==='abascal'?0x292522:0x352821),browMat=mat(kind==='puigdemont'?0x77736d:0x342721);
+ const detailSphere=(x,y,z,sx,sy,sz,m)=>{const o=new T.Mesh(new T.SphereGeometry(1,16,12),m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;head.add(o);return o;};
+ // Hairlines differ by person: close-cropped, shaved, swept grey, or long side locks.
+ if(kind==='spain'){
+   // Abascal: shaved scalp and a broad, unmistakable full beard.
+   haircap.scale.set(.84,.74,.78);haircap.position.y=.11;
+   detailSphere(0,-.22,.22,.29,.31,.22,beardMat);
+   detailSphere(-.22,-.09,.20,.12,.22,.14,beardMat);detailSphere(.22,-.09,.20,.12,.22,.14,beardMat);
+   detailSphere(0,-.39,.25,.2,.12,.12,beardMat);
+ }else if(kind==='euro'){
+   // Rufián: short dark hair, shaped beard and black rectangular glasses.
+   haircap.scale.set(.88,.9,.82);
+   detailSphere(0,-.22,.23,.27,.25,.19,beardMat);
+   detailSphere(-.2,-.08,.22,.1,.17,.12,beardMat);detailSphere(.2,-.08,.22,.1,.17,.12,beardMat);
+   const glasses=mat(0x17171a,.3,.2);
+   for(const side of [-1,1]){const lens=new T.Mesh(new T.TorusGeometry(.105,.018,6,20),glasses);lens.position.set(side*.13,.055,.34);head.add(lens);}
+   cube(head,0,.055,.345,.09,.025,.025,glasses);
+ }else if(kind==='estelada'&&id==='puigdemont'){
+   // Puigdemont: swept-back silver hair and a grey beard.
+   haircap.material=silverHair;haircap.scale.set(1.04,1.08,.92);haircap.position.set(-.04,.11,-.015);
+   detailSphere(-.18,.15,.05,.2,.14,.23,silverHair);detailSphere(.1,.2,-.02,.28,.13,.22,silverHair);
+   detailSphere(0,-.22,.23,.27,.26,.19,beardMat);
+   detailSphere(-.19,-.1,.2,.1,.18,.13,beardMat);detailSphere(.19,-.1,.2,.1,.18,.13,beardMat);
+ }else if(kind==='estelada'&&id==='orriols'){
+   // Orriols: long dark hair framing both sides of the face.
+   haircap.scale.set(.98,1.15,.9);
+   detailSphere(-.29,-.15,.02,.13,.53,.16,darkHair);detailSphere(.29,-.15,.02,.13,.53,.16,darkHair);
+   detailSphere(-.27,-.42,-.01,.12,.28,.14,darkHair);detailSphere(.27,-.42,-.01,.12,.28,.14,darkHair);
+ }else{
+   // Sánchez: neat, close-cropped dark hair and defined sideburns.
+   haircap.scale.set(.86,.86,.82);
+   detailSphere(-.29,-.03,.04,.065,.18,.09,darkHair);detailSphere(.29,-.03,.04,.065,.18,.09,darkHair);
+ }
+ for(let side of [-1,1]){
+   cube(head,side*.13,.05,.29,.075,.045,.025,mat(0x17131a));
+   const brow=cube(head,side*.13,.13,.30,.12,.035,.035,browMat);brow.rotation.z=side*-.08;
+ }
  // Arms swing from shoulders.
  const arms=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);cube(shoulder,side*.04,-.22,.02,.23,.46,.25,suit);const elbow=new T.Group();elbow.position.set(side*.05,-.42,.04);shoulder.add(elbow);cube(elbow,0,-.16,.04,.19,.36,.2,suit);const hand=new T.Mesh(new T.SphereGeometry(.145,14,12),skin);hand.position.set(0,-.36,.12);hand.castShadow=true;elbow.add(hand);shoulder.userData.elbow=elbow;shoulder.userData.side=side;arms.push(shoulder);}
  cape(body,colors.cape||0x9b1b2d,kind);
