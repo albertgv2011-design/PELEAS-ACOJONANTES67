@@ -145,7 +145,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  function resize(){const w=Math.max(1,stage.clientWidth||window.innerWidth||800),h=Math.max(1,stage.clientHeight||window.innerHeight||500);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.position.set(0,4.3,12.5);camera.lookAt(0,2.15,0);}
  if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);window.addEventListener('resize',resize,{passive:true});resize();
  let last=0;
- function animate(t){requestAnimationFrame(animate);const dt=Math.min(.04,(t-last)/1000||0);last=t;const now=performance.now();
+ function animate(t){requestAnimationFrame(animate);const dt=Math.min(.04,(t-last)/1000||0);last=t;const now=performance.now();animateSpecials(now,dt);
  for(const f of Object.values(fighters)){const u=f.userData;u.phase=(u.phase||0)+dt*(u.moveUntil>now?9:3);u.targetX=Number.isFinite(u.targetX)?u.targetX:u.baseX;
  if(u.dead){u.body.rotation.z=T.MathUtils.damp(u.body.rotation.z,.02,5,dt);u.body.position.y=T.MathUtils.damp(u.body.position.y,-.48,5,dt);u.body.rotation.x=T.MathUtils.damp(u.body.rotation.x,.02,5,dt);u.legs.forEach((l,i)=>{l.rotation.x=T.MathUtils.damp(l.rotation.x,i===0?-.1:1.15,6,dt);l.rotation.z=T.MathUtils.damp(l.rotation.z,i===0?-.1:.2,6,dt);});u.arms.forEach((a,i)=>{a.rotation.x=T.MathUtils.damp(a.rotation.x,i===0?-.1:.1,6,dt);a.rotation.z=T.MathUtils.damp(a.rotation.z,i===0?-.8:.8,6,dt);});continue;}
  f.position.x=T.MathUtils.damp(f.position.x,u.targetX,10,dt);
@@ -165,6 +165,35 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  function chosenId(i){const n=document.getElementById('name'+i)?.textContent||'';return Object.keys(fighters).find(k=>({sanchez:'Pedro Sánchez',abascal:'Santiago Abascal',rufian:'Gabriel Rufián',puigdemont:'Puigdemont',orriols:'Sílvia Orriols'}[k])===n)|| (i===0?'puigdemont':'sanchez');}
  function updateFighter(i){const id=chosenId(i);if(!window.__pa3dSelected)window.__pa3dSelected=[null,null];const prev=window.__pa3dSelected[i];if(prev)prev.visible=false;const f=fighters[id]||fighters.puigdemont;f.visible=true;f.position.x=i===0?-2.55:2.55;f.rotation.y=i===0?.25:-.25;f.userData.baseX=f.position.x;f.scale.setScalar(1.65);window.__pa3dSelected[i]=f;return f;}
  Object.values(fighters).forEach(f=>f.visible=false);let active=[updateFighter(0),updateFighter(1)];
+
+ // Character-specific special attacks: each uses its own visual motif and motion.
+ const specialFx=[];
+ function specialAttack(f){
+   if(!f)return;const id=f.userData.id,now=performance.now(),u=f.userData;
+   u.attackUntil=now+850;u.specialUntil=now+1050;u.specialStarted=now;
+   const group=new T.Group();group.position.copy(f.position);group.position.y=1.45;scene.add(group);
+   const glow=(color,opacity=.85)=>new T.MeshBasicMaterial({color,transparent:true,opacity,side:T.DoubleSide,depthWrite:false});
+   const addRing=(color,scale=1)=>{const m=new T.Mesh(new T.TorusGeometry(.72*scale,.075*scale,8,40),glow(color));m.rotation.y=Math.PI/2;group.add(m);};
+   if(id==='puigdemont'){
+     addRing(0x148cff,1.5);addRing(0x54d9ff,1.15);group.userData.kind='portal';
+   }else if(id==='orriols'){
+     const slash=new T.Mesh(new T.TorusGeometry(1.05,.09,8,32,.9),glow(0xffd33d));slash.rotation.set(.5,0,-.6);group.add(slash);
+     const stripe=new T.Mesh(new T.BoxGeometry(1.5,.15,.06),glow(0xc51d30));stripe.position.y=.25;group.add(stripe);group.userData.kind='estelada-slash';
+   }else if(id==='rufian'){
+     const bill=new T.Mesh(new T.BoxGeometry(.9,.48,.035),glow(0x6be09b));bill.rotation.z=-.25;group.add(bill);
+     const mark=new T.Mesh(new T.TorusGeometry(.13,.025,6,18),glow(0xffe7a2));mark.position.z=.04;group.add(mark);group.userData.kind='bill';
+   }else if(id==='abascal'){
+     const burst=new T.Mesh(new T.ConeGeometry(.7,1.5,5),glow(0xff3c25));burst.rotation.z=-Math.PI/2;group.add(burst);
+     const stripe=new T.Mesh(new T.BoxGeometry(1.15,.18,.08),glow(0xffd22f));stripe.position.x=.1;group.add(stripe);group.userData.kind='patriotic-charge';
+   }else{
+     const flag=new T.Mesh(new T.PlaneGeometry(1.25,.8),glow(0xc52234));flag.position.x=.15;group.add(flag);
+     const star=new T.Mesh(new T.ShapeGeometry((()=>{const s=new T.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,r=i%2?.12:.28;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?s.lineTo(x,y):s.moveTo(x,y);}s.closePath();return s;})()),glow(0x16854c));star.position.z=.03;group.add(star);group.userData.kind='morocco-flag-charge';
+   }
+   specialFx.push({group,start:now,duration:1000,owner:f});
+ }
+ function animateSpecials(now,dt){
+   for(let i=specialFx.length-1;i>=0;i--){const fx=specialFx[i],p=Math.min(1,(now-fx.start)/fx.duration);fx.group.position.x=fx.owner.position.x+(fx.owner.userData.baseX<0?.8:-.8)*p*2.1;fx.group.position.y=1.35+Math.sin(p*Math.PI)*.65;fx.group.scale.setScalar(1+.35*Math.sin(p*Math.PI));fx.group.rotation.y+=dt*2.8;fx.group.traverse(o=>{if(o.material&&o.material.transparent)o.material.opacity=.9*(1-p);});if(p>=1){scene.remove(fx.group);fx.group.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)o.material.dispose();});specialFx.splice(i,1);}}
+ }
  // Server events already drive the match; add physical animation to those events without replacing existing UI logic.
  const feed=document.getElementById('feed');const oldText=feed?feed.textContent:'';
  const origFeed=window.__pa3dFeed;
@@ -174,7 +203,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  if(k==='s'){u.duckUntil=now+650;}
  if(k==='w'){u.jumpUntil=now+620;u.jumpStarted=now;}
  if(k==='j'){u.attackUntil=now+420;}
- if(k==='k'){u.attackUntil=now+720;}
+ if(k==='k'){specialAttack(f);}
  if(k==='shift'){u.blockUntil=now+1000;}
  });
  window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();keyDowns.delete(k);if(!document.body.classList.contains('in-fight'))return;const f=active[0];if(f&&(k==='a'||k==='d'))f.userData.moveUntil=0;});
@@ -186,7 +215,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  // Connect server combat messages to 3D hit reactions, KO pose and winner celebration.
  const _wsDescriptor=Object.getOwnPropertyDescriptor(window,'ws');
  function watchSocket(){
-   const check=setInterval(()=>{try{if(typeof ws!=='undefined'&&ws&&ws!==window.__pa3dWatched){window.__pa3dWatched=ws;const sock=ws;const old=sock.onmessage;sock.onmessage=function(ev){if(old)old.call(this,ev);try{const m=JSON.parse(ev.data);if(m.type==='combat-event'){const f=active[m.player];if(f){const u=f.userData,now=performance.now();if(m.action==='attack'||m.action==='rare'){u.attackUntil=now+(m.action==='rare'?720:420);const victim=active[1-m.player];if(victim){victim.userData.hitUntil=now+260;victim.rotation.z=(m.player===0?-.16:.16);setTimeout(()=>{if(!victim.userData.dead)victim.rotation.z=0;},280);}}if(m.action==='jump'){u.jumpUntil=now+620;u.jumpStarted=now;}if(m.action==='crouch')u.duckUntil=now+650;if(m.action==='move-left'||m.action==='move-right'){u.moveUntil=now+260;u.moveDir=m.action==='move-left'?-1:1;u.targetX=Math.max(-6.8,Math.min(6.8,(Number.isFinite(u.targetX)?u.targetX:f.position.x)+u.moveDir*.8));}if(m.action==='block')u.blockUntil=now+800;}}
+   const check=setInterval(()=>{try{if(typeof ws!=='undefined'&&ws&&ws!==window.__pa3dWatched){window.__pa3dWatched=ws;const sock=ws;const old=sock.onmessage;sock.onmessage=function(ev){if(old)old.call(this,ev);try{const m=JSON.parse(ev.data);if(m.type==='combat-event'){const f=active[m.player];if(f){const u=f.userData,now=performance.now();if(m.action==='attack'||m.action==='rare'){if(m.action==='rare')specialAttack(f);else u.attackUntil=now+420;const victim=active[1-m.player];if(victim){victim.userData.hitUntil=now+260;victim.rotation.z=(m.player===0?-.16:.16);setTimeout(()=>{if(!victim.userData.dead)victim.rotation.z=0;},280);}}if(m.action==='jump'){u.jumpUntil=now+620;u.jumpStarted=now;}if(m.action==='crouch')u.duckUntil=now+650;if(m.action==='move-left'||m.action==='move-right'){u.moveUntil=now+260;u.moveDir=m.action==='move-left'?-1:1;u.targetX=Math.max(-6.8,Math.min(6.8,(Number.isFinite(u.targetX)?u.targetX:f.position.x)+u.moveDir*.8));}if(m.action==='block')u.blockUntil=now+800;}}
  if(m.type==='fight-over'){active.forEach((f,i)=>{if(!f)return;f.userData.dead=i!==m.winner;f.userData.celebrateUntil=i===m.winner?performance.now()+100000:0;if(i===m.winner){f.userData.dead=false;f.userData.celebrate=true;}});}
  if(m.type==='fight-start'){active.forEach(f=>{if(f){f.userData.dead=false;f.userData.celebrate=false;f.userData.celebrateUntil=0;f.userData.duckUntil=0;f.userData.jumpUntil=0;f.userData.moveUntil=0;f.position.y=0;f.rotation.z=0;}});}
  }catch(err){}};clearInterval(check);}}catch(e){}},250);
