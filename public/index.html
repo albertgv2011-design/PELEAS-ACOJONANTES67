@@ -107,19 +107,9 @@ body.in-fight #fight3d-fallback{inset:0}
 </style>
 <script>
 (function(){
- const stage=document.querySelector('.congress-stage');if(!stage)return;
- const fallback=document.createElement('div');fallback.id='fight3d-fallback';
- fallback.innerHTML='<div class="fallback-fighter"><div class="fallback-person" id="fallback-left">🧔🏻‍♂️</div><div class="fallback-name" id="fallback-left-name">Puigdemont</div></div><div class="fallback-vs">VS</div><div class="fallback-fighter"><div class="fallback-person" id="fallback-right">👨🏻‍💼</div><div class="fallback-name" id="fallback-right-name">Pedro Sánchez</div></div>';
- stage.appendChild(fallback);
- // Only show the emoji fallback if the actual 3D renderer fails; never cover the 3D fighters during normal play.
- function showFallback(){fallback.style.display='flex';}
- window.addEventListener('error',function(e){if(e.message&&/THREE|WebGL|cube|humanoid|renderer|undefined|not a function/i.test(e.message))showFallback();});
- window.addEventListener('unhandledrejection',showFallback);
- const three=document.querySelector('script[src*="three.min.js"]');
- if(!window.THREE){showFallback();if(three)three.addEventListener('load',()=>{if(window.THREE)fallback.style.display='none';});}
- const names=['fallback-left-name','fallback-right-name'],faces=['fallback-left','fallback-right'];
- function update(){for(let i=0;i<2;i++){const n=document.getElementById('name'+i)?.textContent|| (i?'Pedro Sánchez':'Puigdemont');document.getElementById(names[i]).textContent=n;document.getElementById(faces[i]).textContent=/puigdemont/i.test(n)?'🧔🏻‍♂️':/abascal/i.test(n)?'🧔🏻':/rufian/i.test(n)?'🤓':/orriols/i.test(n)?'👩🏻‍💼':'👨🏻‍💼';}}
- update();const observer=new MutationObserver(update);['name0','name1'].forEach(id=>{const el=document.getElementById(id);if(el)observer.observe(el,{childList:true,characterData:true,subtree:true});});
+  // Never put emoji placeholders over the actual 3D politician models.
+  const fallback=document.getElementById('fight3d-fallback');
+  if(fallback) fallback.remove();
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/three@0.160.0/build/three.min.js'"></script>
@@ -145,12 +135,8 @@ body.in-fight #fight3d-fallback{inset:0}
  // A flat horizontal floor: the old oversized box crossed in front of the backdrop.
  const floor=new T.Mesh(new T.PlaneGeometry(30,19),floorMat);floor.rotation.x=-Math.PI/2;floor.position.set(0,-.22,-2);floor.receiveShadow=true;scene.add(floor);
  const congressPhotoUrl='https://upload.wikimedia.org/wikipedia/commons/c/cf/Interior_del_Congreso_de_los_Diputados_de_Espa%C3%B1a.jpg';
- const photoMaterial=new T.MeshBasicMaterial({color:0xffffff,side:T.DoubleSide});
- const photoPlane=new T.Mesh(new T.PlaneGeometry(25,16),photoMaterial);
- photoPlane.position.set(0,3.1,-8.6);scene.add(photoPlane);
- const photoLoader=new T.TextureLoader();photoLoader.setCrossOrigin('anonymous');
- photoLoader.load(congressPhotoUrl,texture=>{texture.colorSpace=T.SRGBColorSpace;photoMaterial.map=texture;photoMaterial.needsUpdate=true;},undefined,()=>{scene.background=new T.Color(0x21151a);});
- function cape(parent,color,kind){const geo=new T.PlaneGeometry(1.5,2.25,8,10);const m=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.7,emissive:color,emissiveIntensity:.08});const mesh=new T.Mesh(geo,m);mesh.position.set(0,1.8,-.34);mesh.rotation.y=.15;parent.add(mesh);mesh.userData.cape=true; if(kind==='morocco'){const star=new T.Group();for(let i=0;i<5;i++){const a=i*Math.PI*2/5;const line=cube(star,Math.cos(a)*.17,Math.sin(a)*.17,.015,.36,.025,.025,mat(0x167447));line.rotation.z=a+Math.PI/2;}star.position.set(0,1.8,-.29);parent.add(star);}if(kind==='estelada'){const stripe=cube(parent,0,1.8,-.27,1.5,.28,.025,mat(0xffd53d));stripe.position.x=.03;}}
+  // CSS supplies the Congress photo behind the transparent canvas; no opaque plane.
+  function cape(parent,color,kind){const geo=new T.PlaneGeometry(1.5,2.25,8,10);const m=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.7,emissive:color,emissiveIntensity:.08});const mesh=new T.Mesh(geo,m);mesh.position.set(0,1.8,-.34);mesh.rotation.y=.15;parent.add(mesh);mesh.userData.cape=true; if(kind==='morocco'){const star=new T.Group();for(let i=0;i<5;i++){const a=i*Math.PI*2/5;const line=cube(star,Math.cos(a)*.17,Math.sin(a)*.17,.015,.36,.025,.025,mat(0x167447));line.rotation.z=a+Math.PI/2;}star.position.set(0,1.8,-.29);parent.add(star);}if(kind==='estelada'){const stripe=cube(parent,0,1.8,-.27,1.5,.28,.025,mat(0xffd53d));stripe.position.x=.03;}}
  function humanoid(id,x,colors,kind){const root=new T.Group();root.position.set(x,0,0);scene.add(root);const body=new T.Group();root.add(body);
  const skin=mat(colors.skin||0xc58c6b),suit=mat(colors.suit),shirt=mat(0xe9e6df),tie=mat(colors.tie||0x54243b),hair=mat(colors.hair||0x332a25),shoe=mat(0x11131a,.4);
  // Legs with independently animated pivots.
