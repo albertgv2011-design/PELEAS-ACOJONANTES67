@@ -43,7 +43,34 @@ body.in-fight #fight3d{position:absolute!important;inset:0!important;width:100%!
 body.in-fight .congress-stage>.floor{z-index:1!important;pointer-events:none!important}
 body.in-fight .congress-stage>.congress-sign{z-index:4!important;pointer-events:none!important}
 body.in-fight .congress-stage>#fight3d-fallback{z-index:5!important}
-body.in-fight .congress-stage{background-color:#21151a!important;background-image:linear-gradient(180deg,#100b1920,#100b1920 60%,#100b1970),url('https://upload.wikimedia.org/wikipedia/commons/c/cf/Interior_del_Congreso_de_los_Diputados_de_Espa%C3%B1a.jpg')!important;background-position:center 44%!important;background-size:cover!important;background-repeat:no-repeat!important}
+/* Futuristic arena backdrop: cool blue left, warm orange right, packed stands and a glossy court. */
+body.in-fight .congress-stage{
+ background-color:#080e20!important;
+ background-image:
+  radial-gradient(ellipse at 18% 72%,#148dff65 0,transparent 32%),
+  radial-gradient(ellipse at 82% 72%,#ff702b70 0,transparent 32%),
+  linear-gradient(180deg,#070b19 0%,#101b38 12%,#1a2143 28%,#161b31 42%,#20253a 44%,#0d1325 45%,#171d31 55%,#080d1c 100%)!important;
+ background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important;
+}
+body.in-fight .congress-stage:before{
+ content:"";position:absolute;inset:0 0 39%;z-index:0;pointer-events:none;
+ background:
+  repeating-linear-gradient(90deg,transparent 0 54px,#8ca9ff18 55px 58px,transparent 59px 90px),
+  repeating-linear-gradient(0deg,#11172c00 0 17px,#c1d3ff22 18px 20px,transparent 21px 27px),
+  radial-gradient(ellipse at 50% 100%,#ffb4541f,transparent 55%),
+  repeating-linear-gradient(90deg,#131b32 0 8px,#2c3b60 9px 12px,#11172b 13px 23px);
+ opacity:.95;
+}
+body.in-fight .congress-stage:after{
+ content:"";position:absolute;left:0;right:0;top:35%;height:22%;z-index:0;pointer-events:none;
+ border-top:5px solid #6f9cffaa;border-bottom:8px solid #ff9a43cc;
+ background:
+  repeating-linear-gradient(90deg,transparent 0 30px,#a5caff45 31px 34px,transparent 35px 58px),
+  linear-gradient(90deg,#096cff88 0%,#163a75 36%,#35314b 50%,#843d31 65%,#ff6d26a8 100%);
+ box-shadow:0 0 24px #278aff66,0 14px 24px #ff792e33;
+}
+body.in-fight .congress-stage>.floor{opacity:0!important}
+body.in-fight #fight3d{z-index:2!important}
 body.in-fight .congress-sign{position:absolute!important;z-index:2!important;top:5%!important;left:50%!important;transform:translateX(-50%)!important;width:max-content!important;max-width:80%!important;text-align:center!important;padding:6px 14px!important;font-size:clamp(10px,1.4vw,17px)!important;letter-spacing:1px!important;background:#b8a078!important;color:#2a1c16!important;border:3px double #5b432b!important;box-shadow:0 3px 14px #0009!important}
 body.in-fight .floor{position:absolute!important;z-index:1!important;left:-15%!important;right:-15%!important;bottom:-30%!important;height:55%!important;pointer-events:none!important;background:repeating-linear-gradient(90deg,#e9ca8b20 0 2px,transparent 2px 80px),repeating-linear-gradient(0deg,#e9ca8b16 0 2px,transparent 2px 44px),linear-gradient(#7d4a38,#26151d)!important;transform:perspective(240px) rotateX(14deg)!important}
 body.in-fight #avatar0,body.in-fight #avatar1{display:none!important}
@@ -131,7 +158,7 @@ body.in-fight #fight3d-fallback{inset:0}
  // Photographic backdrop of the real Congress of Deputies hemicycle.
  // Source: Wikimedia Commons, Ministry of the Presidency of the Government of Spain.
  function cube(parent,x,y,z,sx,sy,sz,m){const o=new T.Mesh(new T.BoxGeometry(sx,sy,sz),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;}
- const floorMat=mat(0x34242a,.32,.18);
+ const floorMat=new T.MeshStandardMaterial({color:0x141b2b,roughness:.22,metalness:.42,transparent:true,opacity:.16});
  // A flat horizontal floor: the old oversized box crossed in front of the backdrop.
  const floor=new T.Mesh(new T.PlaneGeometry(30,19),floorMat);floor.rotation.x=-Math.PI/2;floor.position.set(0,-.22,-2);floor.receiveShadow=true;scene.add(floor);
  const congressPhotoUrl='https://upload.wikimedia.org/wikipedia/commons/c/cf/Interior_del_Congreso_de_los_Diputados_de_Espa%C3%B1a.jpg';
