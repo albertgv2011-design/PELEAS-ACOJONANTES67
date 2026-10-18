@@ -161,9 +161,9 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);window.addEventListener('resize',resize,{passive:true});resize();
  let last=0;
  function animate(t){requestAnimationFrame(animate);const dt=Math.min(.04,(t-last)/1000||0);last=t;const now=performance.now();animateSpecials(now,dt);
- for(const f of Object.values(fighters)){const u=f.userData;u.phase=(u.phase||0)+dt*(u.moveUntil>now?9:3);u.targetX=Number.isFinite(u.targetX)?u.targetX:u.baseX;
+ for(const f of active){if(!f)continue;const u=f.userData;u.phase=(u.phase||0)+dt*(u.moveUntil>now?9:3);u.targetX=Number.isFinite(u.targetX)?u.targetX:u.baseX;
  if(u.dead){u.body.rotation.z=T.MathUtils.damp(u.body.rotation.z,.02,5,dt);u.body.position.y=T.MathUtils.damp(u.body.position.y,-.48,5,dt);u.body.rotation.x=T.MathUtils.damp(u.body.rotation.x,.02,5,dt);u.legs.forEach((l,i)=>{l.rotation.x=T.MathUtils.damp(l.rotation.x,i===0?-.1:1.15,6,dt);l.rotation.z=T.MathUtils.damp(l.rotation.z,i===0?-.1:.2,6,dt);});u.arms.forEach((a,i)=>{a.rotation.x=T.MathUtils.damp(a.rotation.x,i===0?-.1:.1,6,dt);a.rotation.z=T.MathUtils.damp(a.rotation.z,i===0?-.8:.8,6,dt);});continue;}
- if(u.moveUntil>now&&u.moveKey){f.position.x=Math.max(-5.6,Math.min(5.6,f.position.x+(u.moveKey==='a'?-1:1)*dt*4.2));u.targetX=f.position.x;}else{u.targetX=f.position.x;}
+ if(u.moveUntil>now&&u.moveKey){f.position.x=Math.max(-5.6,Math.min(5.6,f.position.x+(u.moveKey==='a'?-1:1)*dt*4.2));u.targetX=f.position.x;}else{u.moveKey='';u.targetX=f.position.x;}
  const moving=now<u.moveUntil,ducking=now<u.duckUntil,jumping=now<u.jumpUntil,attacking=now<u.attackUntil,blocking=now<u.blockUntil,celebrating=now<u.celebrateUntil; if(attacking){const p=1-(u.attackUntil-now)/420;u.attackPhase=Math.max(0,Math.min(1,p));}else u.attackPhase=0;
  const walk=Math.sin(u.phase*2.2),bob=moving?Math.abs(walk)*.11:Math.abs(Math.sin(u.phase))*.018;
  u.body.position.y=T.MathUtils.damp(u.body.position.y,bob,12,dt);
@@ -178,7 +178,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  renderer.render(scene,camera);}
  requestAnimationFrame(animate);
  function chosenId(i){const n=document.getElementById('name'+i)?.textContent||'';return Object.keys(fighters).find(k=>({sanchez:'Pedro Sánchez',abascal:'Santiago Abascal',rufian:'Gabriel Rufián',puigdemont:'Puigdemont',orriols:'Sílvia Orriols'}[k])===n)|| (i===0?'puigdemont':'sanchez');}
- function updateFighter(i){let id=chosenId(i);if(window.__paPractice){id=i===0?'sanchez':chosenId(0);}if(!window.__pa3dSelected)window.__pa3dSelected=[null,null];const prev=window.__pa3dSelected[i];if(prev)prev.visible=false;const f=fighters[id]||fighters.puigdemont;f.visible=true;const visualLeft=window.__paPractice?i===1:i===0;f.position.x=visualLeft?-3.35:3.35;f.rotation.y=visualLeft?.32:-.32;f.userData.baseX=f.position.x;f.userData.targetX=f.position.x;f.userData.moveKey='';f.userData.moveUntil=0;f.scale.setScalar(1.65);window.__pa3dSelected[i]=f;return f;}
+ function updateFighter(i){let id=chosenId(i);if(window.__paPractice){id=i===0?'sanchez':chosenId(0);}if(!window.__pa3dSelected)window.__pa3dSelected=[null,null];const prev=window.__pa3dSelected[i];if(prev)prev.visible=false;const f=fighters[id]||fighters.puigdemont;const changed=prev!==f;f.visible=true;const visualLeft=window.__paPractice?i===1:i===0;if(changed){f.position.x=visualLeft?-3.35:3.35;f.rotation.y=visualLeft?.32:-.32;f.userData.baseX=f.position.x;f.userData.targetX=f.position.x;f.userData.moveKey='';f.userData.moveUntil=0;f.userData.dead=false;f.userData.attackUntil=0;f.userData.jumpUntil=0;f.userData.duckUntil=0;f.userData.blockUntil=0;f.scale.setScalar(1.65);}window.__pa3dSelected[i]=f;return f;}
  Object.values(fighters).forEach(f=>f.visible=false);let active=[updateFighter(0),updateFighter(1)];
 
  // Character-specific special attacks: each uses its own visual motif and motion.
@@ -250,7 +250,7 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  if(m.action==='block')u.blockUntil=now+800;
 }}
  if(m.type==='fight-over'){active.forEach((f,i)=>{if(!f)return;f.userData.dead=i!==m.winner;f.userData.celebrateUntil=i===m.winner?performance.now()+100000:0;if(i===m.winner){f.userData.dead=false;f.userData.celebrate=true;}});}
- if(m.type==='fight-start'){active.forEach(f=>{if(f){f.userData.dead=false;f.userData.celebrate=false;f.userData.celebrateUntil=0;f.userData.duckUntil=0;f.userData.jumpUntil=0;f.userData.moveUntil=0;f.position.y=0;f.rotation.z=0;}});}
+ if(m.type==='fight-start'){active.forEach((f,i)=>{if(f){const left=window.__paPractice?i===1:i===0;f.position.x=left?-3.35:3.35;f.userData.baseX=f.position.x;f.userData.targetX=f.position.x;f.userData.moveKey='';f.userData.dead=false;f.userData.celebrate=false;f.userData.celebrateUntil=0;f.userData.duckUntil=0;f.userData.jumpUntil=0;f.userData.moveUntil=0;f.userData.attackUntil=0;f.userData.blockUntil=0;f.position.y=0;f.rotation.z=0;}});}
  }catch(err){}};clearInterval(check);}}catch(e){}},250);
  }
  watchSocket();
