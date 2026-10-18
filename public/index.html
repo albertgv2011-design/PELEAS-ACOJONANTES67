@@ -102,48 +102,16 @@ $('rematch').onclick=()=>send({type:'rematch'});document.querySelectorAll('[data
  const rim=new T.PointLight(0x3a78ff,35,20);rim.position.set(-6,5,2);scene.add(rim);
  const warm=new T.PointLight(0xff693c,28,20);warm.position.set(7,4,2);scene.add(warm);
  function mat(color,rough=.68,metal=0){return new T.MeshStandardMaterial({color,roughness:rough,metalness:metal});}
- const wood=mat(0x4a281c),gold=mat(0xc5a15c,.35,.55),red=mat(0x6f1924),seat=mat(0x48202a),floorMat=mat(0x5b3540,.28,.25);
- function cube(parent,x,y,z,sx,sy,sz,m){const o=new T.Mesh(new T.BoxGeometry(sx,sy,sz),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;}
- // Procedural chamber: polished floor, dais, columns, galleries, benches and the central rostrum.
- const floor=cube(scene,0,-.22,-2,30,.35,19,floorMat); floor.receiveShadow=true;
- for(let x=-13;x<=13;x+=2.6){cube(scene,x,.1,-7,.12,.05,14,gold);}
- cube(scene,0,.5,-7,8,1.4,2,wood);cube(scene,0,1.3,-7,4.4,1.7,1.3,gold);cube(scene,0,1.42,-6.25,3.9,1.3,.08,wood);
- for(let i=-5;i<=5;i++){const x=i*1.9;cube(scene,x,1.2,-8.8,1.55,1.1,.7,seat);cube(scene,x,1.82,-9.15,1.55,.16,.18,gold);}
- for(let side of [-1,1]){for(let level=0;level<3;level++){cube(scene,side*8,1.1+level*1.35,-5-level*.2,6,.35,4,wood);for(let x=-2;x<=2;x++){cube(scene,side*8+x*1.05,1.55+level*1.35,-4.5-level*.2,.7,.65,.65,seat);}}for(let x=-1;x<=1;x++){const col=cube(scene,side*12,4.1,-7+x*0,1,7,.9,wood);col.position.x=side*12;}}
- // Congress chamber dressing: timber panelling, gilded pilasters, semicircular red benches and a central dais.
- const wall=cube(scene,0,4.8,-10.8,29,10,.5,wood);wall.material=mat(0x4a2a20);
- for(let x=-13;x<=13;x+=3.25){
-   cube(scene,x,4.7,-10.45,.16,8.5,.2,gold);
-   cube(scene,x,8.85,-10.35,2.8,.28,.32,gold);
-   cube(scene,x,1.0,-10.35,2.7,.22,.3,gold);
- }
- // Tiered central speaker's platform and broad carpeted steps.
- cube(scene,0,.1,-7.3,9,.25,3.6,red);
- for(let n=0;n<4;n++)cube(scene,0,.18+n*.22,-6.3-n*.43,8.2-n*.85,.18,.65,wood);
- cube(scene,0,1.05,-8.5,5.6,1.45,1.1,wood);cube(scene,0,1.84,-8.92,5.2,.14,.18,gold);
- // Curved parliamentary seating in three tiers, turned toward the speaker's rostrum.
- const crowdMat=mat(0x171723),crowdSuit=mat(0x252b39);
- for(let tier=0;tier<3;tier++){
-   const radius=5.5+tier*1.55,z=-5.4-tier*.7,y=.55+tier*.72;
-   for(let j=0;j<19;j++){
-     const a=(-1.22+j*2.44/18),x=Math.sin(a)*radius,zz=z-Math.cos(a)*radius*.36;
-     const bench=cube(scene,x,y,zz,1.02,.28,.75,seat);bench.rotation.y=a*.48;
-     const back=cube(scene,x,y+.32,zz-.17,1.02,.42,.16,wood);back.rotation.y=a*.48;
-     const g=new T.Group();g.position.set(x,y+.35,zz+.03);g.rotation.y=a*.48;scene.add(g);
-     cube(g,0,.45,0,.28,.55,.24,crowdSuit);
-     const head=new T.Mesh(new T.SphereGeometry(.145,12,10),crowdMat);head.position.set(0,.85,.025);g.add(head);
-   }
- }
- // Brass balustrades and the recognizable upper public gallery.
- for(let side of [-1,1]){
-   cube(scene,side*10,2.8,-7.1,.18,2.6,6.8,gold);
-   cube(scene,side*10,4.15,-7.1,.24,.18,7.2,gold);
-   for(let j=0;j<13;j++)cube(scene,side*(4.5+j*.9),3.45,-8.1,.055,1.1,.055,gold);
- }
- // Spanish and EU flags flank the speaker's platform.
- function chamberFlag(x,color,accent){const pole=cube(scene,x,3.15,-9.4,.055,3.1,.055,gold);const cloth=cube(scene,x+(x<0?.48:-.48),3.65,-9.4,.9,.62,.035,mat(color));cube(scene,x+(x<0?.48:-.48),3.65,-9.37,.9,.2,.025,mat(accent));}
- chamberFlag(-4.6,0xc52234,0xffcf36);chamberFlag(4.6,0x173f8a,0xffd53d);
- // Flag capes are cloth-like colored panels with emblem stripes.
+ // Photographic backdrop of the real Congress of Deputies hemicycle.
+ // Source: Wikimedia Commons, Ministry of the Presidency of the Government of Spain.
+ const floorMat=mat(0x34242a,.32,.18);
+ const floor=cube(scene,0,-.22,-2,30,.35,19,floorMat);floor.receiveShadow=true;
+ const congressPhotoUrl='https://upload.wikimedia.org/wikipedia/commons/c/cf/Interior_del_Congreso_de_los_Diputados_de_Espa%C3%B1a.jpg';
+ const photoMaterial=new T.MeshBasicMaterial({color:0xffffff,side:T.DoubleSide});
+ const photoPlane=new T.Mesh(new T.PlaneGeometry(25,16),photoMaterial);
+ photoPlane.position.set(0,3.1,-8.6);scene.add(photoPlane);
+ const photoLoader=new T.TextureLoader();photoLoader.setCrossOrigin('anonymous');
+ photoLoader.load(congressPhotoUrl,texture=>{texture.colorSpace=T.SRGBColorSpace;photoMaterial.map=texture;photoMaterial.needsUpdate=true;},undefined,()=>{scene.background=new T.Color(0x21151a);});
  function cape(parent,color,kind){const geo=new T.PlaneGeometry(1.5,2.25,8,10);const m=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.7,emissive:color,emissiveIntensity:.08});const mesh=new T.Mesh(geo,m);mesh.position.set(0,1.8,-.34);mesh.rotation.y=.15;parent.add(mesh);mesh.userData.cape=true; if(kind==='morocco'){const star=new T.Group();for(let i=0;i<5;i++){const a=i*Math.PI*2/5;const line=cube(star,Math.cos(a)*.17,Math.sin(a)*.17,.015,.36,.025,.025,mat(0x167447));line.rotation.z=a+Math.PI/2;}star.position.set(0,1.8,-.29);parent.add(star);}if(kind==='estelada'){const stripe=cube(parent,0,1.8,-.27,1.5,.28,.025,mat(0xffd53d));stripe.position.x=.03;}}
  function humanoid(id,x,colors,kind){const root=new T.Group();root.position.set(x,0,0);scene.add(root);const body=new T.Group();root.add(body);
  const skin=mat(colors.skin||0xc58c6b),suit=mat(colors.suit),shirt=mat(0xe9e6df),tie=mat(colors.tie||0x54243b),hair=mat(colors.hair||0x332a25),shoe=mat(0x11131a,.4);
