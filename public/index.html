@@ -160,7 +160,7 @@ body.in-fight #fight3d-fallback{inset:0}
   // CSS supplies the Congress photo behind the transparent canvas; no opaque plane.
   function cape(parent,color,kind){const geo=new T.PlaneGeometry(1.5,2.25,8,10);const m=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.7,emissive:color,emissiveIntensity:.08});const mesh=new T.Mesh(geo,m);mesh.position.set(0,1.8,-.34);mesh.rotation.y=.15;parent.add(mesh);mesh.userData.cape=true; if(kind==='morocco'){const star=new T.Group();for(let i=0;i<5;i++){const a=i*Math.PI*2/5;const line=cube(star,Math.cos(a)*.17,Math.sin(a)*.17,.015,.36,.025,.025,mat(0x167447));line.rotation.z=a+Math.PI/2;}star.position.set(0,1.8,-.29);parent.add(star);}if(kind==='estelada'){const stripe=cube(parent,0,1.8,-.27,1.5,.28,.025,mat(0xffd53d));stripe.position.x=.03;}}
  function humanoid(id,x,colors,kind){const root=new T.Group();root.position.set(x,0,0);scene.add(root);const body=new T.Group();root.add(body);
- const skin=mat(colors.skin||0xc58c6b),suit=mat(colors.suit),shirt=mat(0xe9e6df),tie=mat(colors.tie||0x54243b),hair=mat(colors.hair||0x332a25),shoe=mat(0x11131a,.4);
+ const skin=mat(colors.skin||0xc58c6b),suit=mat(colors.suit),shirt=mat(colors.shirt||0xe9e6df),tie=mat(colors.tie||0x54243b),hair=mat(colors.hair||0x332a25),shoe=mat(0x11131a,.4);
  // Legs with independently animated pivots.
  const pants=mat(colors.pants||colors.suit);const legs=[];for(let side of [-1,1]){const hip=new T.Group();hip.position.set(side*.27,1.15,0);body.add(hip);cube(hip,0,-.38,0,.3,.8,.38,pants).position.y=-.36;cube(hip,0,-.86,.12,.32,.18,.5,shoe);legs.push(hip);}
  cube(body,0,1.72,0,.9,1.15,.48,suit);
