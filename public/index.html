@@ -167,10 +167,10 @@ body.in-fight #fight3d-fallback{inset:0}
  cube(body,0,1.91,.252,.36,.7,.035,shirt);cube(body,0,1.78,.28,.12,.65,.045,tie);
  const neck=cube(body,0,2.4,0,.2,.23,.2,skin);
  const head=new T.Group();head.position.set(0,2.72,.02);body.add(head);
- const face=new T.Mesh(new T.BoxGeometry(.62,.78,.48),skin);face.castShadow=true;head.add(face);
+ const face=new T.Mesh(new T.BoxGeometry(.68,.78,.52),skin);face.castShadow=true;head.add(face);
  const haircap=new T.Mesh(new T.BoxGeometry(.78,.5,.7),hair);haircap.scale.set(.85,1.15,.8);haircap.position.y=.20;haircap.castShadow=true;head.add(haircap);
  const nose=cube(head,0,-.02,.31,.12,.15,.14,skin);
- for(let side of [-1,1]){cube(head,side*.13,.05,.29,.075,.045,.025,mat(0x17131a));}
+ for(let side of [-1,1]){cube(head,side*.14,.055,.285,.085,.055,.035,mat(0x17131a));}
  // POLITICIAN SKINS: recognizable hair, beard and glasses on the existing head;
  // the original torso, limbs, pivots and combat animation rig remain unchanged.
  const oval=(parent,x,y,z,sx,sy,sz,color)=>{const m=new T.Mesh(new T.BoxGeometry(1,1,1),mat(color));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;parent.add(m);return m;};
@@ -201,15 +201,23 @@ body.in-fight #fight3d-fallback{inset:0}
  const arms=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);const arm=cube(shoulder,side*.05,-.32,.04,.23,.65,.25,suit);arm.rotation.z=side*.12;const hand=cube(shoulder,side*.06,-.68,.13,.22,.22,.22,skin);hand.castShadow=true;arms.push(shoulder);}
  // Character identity follows the user's voxel designs: angular head, blocky clothes and signature accessories.
  if(id==='rufian'){
-   // White shirt and black trousers, as in the supplied voxel reference.
+   // White shirt with a broad, unmistakable front panel and dark trousers.
    cube(body,-.24,1.72,.255,.12,.95,.045,shirt);cube(body,.24,1.72,.255,.12,.95,.045,shirt);
+   cube(body,0,2.03,.285,.42,.12,.055,mat(0xfafafa));
+ }else if(id==='abascal'){
+   // Distinct dark beard and pale shirt collar.
+   cube(body,-.16,2.22,.285,.16,.13,.055,shirt);cube(body,.16,2.22,.285,.16,.13,.055,shirt);
+ }else if(id==='sanchez'){
+   // Clearly visible burgundy tie against the navy suit.
+   cube(body,0,1.79,.315,.15,.48,.065,mat(0x8b2148));cube(body,0,2.08,.315,.20,.16,.07,mat(0x8b2148));
  }else if(id==='orriols'){
    // Long dark coat and two-tone scarf.
    cube(body,0,1.45,.29,.25,.9,.07,mat(0x8d244b));
    cube(body,-.08,1.03,.30,.17,.48,.075,mat(0x087a80));
+   cube(body,.08,1.83,.30,.16,.62,.075,mat(0x8d244b));
  }else if(id==='puigdemont'){
-   // Small yellow ribbon pinned to the lapel.
-   const ribbon=mat(0xffd21f);cube(body,.29,2.03,.285,.09,.18,.045,ribbon).rotation.z=-.5;cube(body,.34,1.96,.29,.09,.18,.045,ribbon).rotation.z=.5;
+   // Yellow ribbon pinned prominently to the lapel.
+   const ribbon=mat(0xffd21f);cube(body,.29,2.03,.315,.09,.18,.06,ribbon).rotation.z=-.5;cube(body,.34,1.96,.32,.09,.18,.06,ribbon).rotation.z=.5;
  }
  cape(body,colors.cape||0x9b1b2d,kind);
  // Stand with a readable fighting pose.
