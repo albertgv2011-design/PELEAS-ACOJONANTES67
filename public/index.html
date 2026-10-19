@@ -158,13 +158,20 @@ body.in-fight #fight3d-fallback{inset:0}
  const floor=new T.Mesh(new T.PlaneGeometry(30,19),floorMat);floor.rotation.x=-Math.PI/2;floor.position.set(0,-.22,-2);floor.receiveShadow=true;scene.add(floor);
  const congressPhotoUrl='./926cf343-3cc2-4f21-adae-031288bbebbb.png';
   // CSS supplies the Congress photo behind the transparent canvas; no opaque plane.
-  function cape(parent,color,kind){const geo=new T.PlaneGeometry(1.5,2.25,8,10);const m=new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.7,emissive:color,emissiveIntensity:.08});const mesh=new T.Mesh(geo,m);mesh.position.set(0,1.8,-.34);mesh.rotation.y=.15;parent.add(mesh);mesh.userData.cape=true; if(kind==='morocco'){const star=new T.Group();for(let i=0;i<5;i++){const a=i*Math.PI*2/5;const line=cube(star,Math.cos(a)*.17,Math.sin(a)*.17,.015,.36,.025,.025,mat(0x167447));line.rotation.z=a+Math.PI/2;}star.position.set(0,1.8,-.29);parent.add(star);}if(kind==='estelada'){const stripe=cube(parent,0,1.8,-.27,1.5,.28,.025,mat(0xffd53d));stripe.position.x=.03;}}
+  function cape(parent,color,kind){
+   // Formal political outfits, not superheroes: remove the oversized rectangular cape.
+   // Keep the helper to preserve compatibility with the existing character rig.
+ }
  function humanoid(id,x,colors,kind){const root=new T.Group();root.position.set(x,0,0);scene.add(root);const body=new T.Group();root.add(body);
  const skin=mat(colors.skin||0xc58c6b),suit=mat(colors.suit),shirt=mat(colors.shirt||0xe9e6df),tie=mat(colors.tie||0x54243b),hair=mat(colors.hair||0x332a25),shoe=mat(0x11131a,.4);
  // Legs with independently animated pivots.
  const pants=mat(colors.pants||colors.suit);const legs=[];for(let side of [-1,1]){const hip=new T.Group();hip.position.set(side*.27,1.15,0);body.add(hip);cube(hip,0,-.38,0,.3,.8,.38,pants).position.y=-.36;cube(hip,0,-.86,.12,.32,.18,.5,shoe);legs.push(hip);}
  cube(body,0,1.72,0,.9,1.15,.48,suit);
+ // Shirt opening, tie and angular jacket lapels make each formal outfit readable.
  cube(body,0,1.91,.252,.36,.7,.035,shirt);cube(body,0,1.78,.28,.12,.65,.045,tie);
+ const lapelMat=mat((id==='puigdemont'||id==='orriols')?0x29272b:0x202b40);
+ const lapelL=cube(body,-.23,2.02,.285,.18,.43,.045,lapelMat);lapelL.rotation.z=-.28;
+ const lapelR=cube(body,.23,2.02,.285,.18,.43,.045,lapelMat);lapelR.rotation.z=.28;
  const neck=cube(body,0,2.4,0,.2,.23,.2,skin);
  const head=new T.Group();head.position.set(0,2.72,.02);body.add(head);
  const face=new T.Mesh(new T.BoxGeometry(.68,.78,.52),skin);face.castShadow=true;head.add(face);
