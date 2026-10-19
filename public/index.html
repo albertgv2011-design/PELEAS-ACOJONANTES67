@@ -189,15 +189,18 @@ body.in-fight #fight3d-fallback{inset:0}
    haircap.material=darkHair;haircap.scale.set(1.02,.96,.94);haircap.position.set(-.025,.20,-.015);
    // Side locks frame the face; staggered cubes create a deliberately sculpted hair silhouette.
    const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=cube(head,x,y,z,sx,sy,sz,color);p.rotation.z=rz;return p;};
-   lock(-.31,.02,.12,.17,.38,.30,-.22,darkHair);
-   lock(.30,.01,.12,.16,.38,.30,.18,darkHair);
-   lock(-.22,.28,.12,.30,.20,.30,-.45,midHair);
-   lock(-.02,.32,.13,.30,.20,.30,-.20,hairHighlight);
-   lock(.18,.27,.12,.27,.20,.30,.32,midHair);
-   lock(.27,.18,.13,.22,.20,.30,.48,darkHair);
-   lock(-.13,.14,.285,.25,.18,.12,-.62,midHair);
-   lock(.02,.10,.29,.23,.20,.12,-.42,darkHair);
-   lock(.15,.14,.285,.19,.16,.12,.34,midHair);
+   lock(-.32,.01,.12,.18,.42,.31,-.22,darkHair);
+   lock(.31,.00,.12,.17,.42,.31,.18,darkHair);
+   // Back and crown layers give the hair a fuller silhouette rather than one flat cap.
+   lock(-.22,.31,.015,.31,.22,.34,-.45,midHair);
+   lock(.02,.35,.025,.32,.22,.34,-.20,hairHighlight);
+   lock(.22,.30,.015,.30,.22,.34,.32,midHair);
+   lock(.30,.20,.06,.23,.24,.32,.48,darkHair);
+   // Swept fringe pieces hang over the forehead at different angles.
+   lock(-.19,.13,.292,.22,.25,.14,-.66,midHair);
+   lock(-.04,.10,.30,.21,.28,.14,-.34,darkHair);
+   lock(.11,.13,.30,.21,.25,.14,.28,midHair);
+   lock(.22,.17,.28,.18,.22,.13,.48,darkHair);
    // Square black glasses, clear bridge and visible skin inside both lenses.
    const frame=mat(0x151515,.25,.15);
    for(const side of [-1,1]){
@@ -253,19 +256,25 @@ body.in-fight #fight3d-fallback{inset:0}
    const leftLapel=cube(body,-.22,2.00,.305,.19,.49,.055,lapel);leftLapel.rotation.z=-.32;
    const rightLapel=cube(body,.22,2.00,.305,.19,.49,.055,lapel);rightLapel.rotation.z=.32;
    cube(body,0,1.90,.315,.32,.70,.045,shirt);
-   cube(body,0,1.77,.35,.15,.52,.065,tieBlue);
-   cube(body,0,2.045,.35,.20,.14,.065,tieBlue);
-   // Jacket pockets and bright white cuffs echo the reference outfit.
-   cube(body,-.28,1.30,.255,.22,.08,.035,pocket);cube(body,.28,1.30,.255,.22,.08,.035,pocket);
-   // Distinct ribbon loop and two angled tails on the lapel.
-   const loop1=cube(body,.285,2.08,.375,.09,.14,.035,gold);loop1.rotation.z=-.58;
-   const loop2=cube(body,.345,2.08,.377,.09,.14,.035,gold);loop2.rotation.z=.58;
-   const tail1=cube(body,.29,1.98,.38,.07,.16,.035,gold);tail1.rotation.z=.38;
-   const tail2=cube(body,.35,1.98,.382,.07,.16,.035,gold);tail2.rotation.z=-.38;
+   // Broader, cleaner tie and visible shirt collar.
+   cube(body,0,1.76,.355,.15,.52,.065,tieBlue);
+   cube(body,0,2.045,.355,.20,.14,.065,tieBlue);
+   cube(body,-.12,2.19,.31,.18,.13,.055,shirt);cube(body,.12,2.19,.31,.18,.13,.055,shirt);
+   // Defined jacket fronts, lapels and low pockets, matching the reference silhouette.
+   const frontL=cube(body,-.29,1.72,.275,.28,1.02,.055,lapel);frontL.rotation.z=-.025;
+   const frontR=cube(body,.29,1.72,.275,.28,1.02,.055,lapel);frontR.rotation.z=.025;
+   const leftEdge=cube(body,-.17,1.98,.315,.09,.55,.045,lapel);leftEdge.rotation.z=-.34;
+   const rightEdge=cube(body,.17,1.98,.315,.09,.55,.045,lapel);rightEdge.rotation.z=.34;
+   cube(body,-.28,1.30,.315,.22,.08,.035,pocket);cube(body,.28,1.30,.315,.22,.08,.035,pocket);
+   // Yellow ribbon as a recognisable loop with two angled tails.
+   const loop1=cube(body,.285,2.08,.39,.075,.13,.04,gold);loop1.rotation.z=-.58;
+   const loop2=cube(body,.345,2.08,.392,.075,.13,.04,gold);loop2.rotation.z=.58;
+   const tail1=cube(body,.29,1.98,.395,.065,.15,.04,gold);tail1.rotation.z=.38;
+   const tail2=cube(body,.35,1.98,.397,.065,.15,.04,gold);tail2.rotation.z=-.38;
  }
  cape(body,colors.cape||0x9b1b2d,kind);
  // Stand with a readable fighting pose.
- arms[0].rotation.z=-.42;arms[0].rotation.x=-.5;arms[1].rotation.z=.55;arms[1].rotation.x=-.7;
+ arms[0].rotation.z=-.24;arms[0].rotation.x=-.38;arms[1].rotation.z=.30;arms[1].rotation.x=-.48;
  root.userData={body,head,arms,legs,kind,id,baseX:x,phase:Math.random()*5,attackUntil:0,blockUntil:0,duckUntil:0,hitUntil:0,dead:false,celebrate:false};return root;}
  const fighters={
  sanchez:humanoid('sanchez',3.2,{skin:0xc58c6b,suit:0x182b50,pants:0x182b50,tie:0x76233b,hair:0x28252b,cape:0x182b50},'morocco'),
