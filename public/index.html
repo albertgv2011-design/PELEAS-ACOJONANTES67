@@ -190,22 +190,21 @@ body.in-fight #fight3d-fallback{inset:0}
  const beardColor=(id==='puigdemont')?0x898984:(id==='abascal')?0x302923:(id==='rufian')?0x3b302a:0x6d625b;
  if(id==='puigdemont'){
    // Reference-matched voxel hairstyle: layered, swept dark locks and a fringe over the forehead.
-   const darkHair=mat(0x302722),midHair=mat(0x40332d),hairHighlight=mat(0x514039);
-   // Raise the hair cap so it sits on the skull instead of dropping like a helmet over the face.
-   // A higher rounded crown and swept side fringe; avoid a flat rectangular helmet.
-   haircap.material=darkHair;haircap.scale.set(.96,.52,.82);haircap.position.set(-.025,.40,-.025);
-   const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=new T.Mesh(new T.DodecahedronGeometry(1,1),color);p.position.set(x,y,z);p.scale.set(sx,sy,sz);p.rotation.z=rz;p.rotation.y=rz*.35;p.castShadow=true;head.add(p);return p;};
-   // Crown clumps overlap higher up, with a swept part from left to right.
-   lock(-.24,.39,.015,.23,.16,.23,-.38,midHair);
-   lock(-.05,.42,.02,.25,.16,.25,-.12,hairHighlight);
-   lock(.16,.39,.015,.23,.15,.23,.25,midHair);
-   lock(.28,.29,.04,.12,.18,.20,.30,darkHair);
-   lock(-.31,.07,.08,.10,.23,.18,-.12,darkHair);
-   lock(.30,.07,.08,.10,.23,.18,.12,darkHair);
-   // Fringe is reduced to small tufts and sits above the upper glasses frame.
-   lock(-.17,.245,.285,.14,.085,.065,-.30,midHair);
-   lock(-.025,.235,.29,.14,.085,.065,-.10,darkHair);
-   lock(.11,.245,.285,.13,.08,.065,.18,midHair);
+   const darkHair=mat(0x302722),midHair=mat(0x40332d),hairHighlight=mat(0x44352e);
+   // Replace round-looking clumps with layered angular locks, closer to the supplied sculpted hairstyle.
+   haircap.material=darkHair;haircap.scale.set(.98,.62,.86);haircap.position.set(-.025,.34,-.025);
+   const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=cube(head,x,y,z,sx,sy,sz,color);p.rotation.z=rz;p.rotation.y=rz*.25;return p;};
+   // Crown layers are broad and swept sideways, not three round bumps above the forehead.
+   lock(-.22,.36,.015,.34,.18,.25,-.30,midHair);
+   lock(-.02,.39,.02,.34,.18,.27,-.12,darkHair);
+   lock(.19,.35,.015,.30,.17,.25,.24,midHair);
+   lock(.30,.23,.045,.15,.24,.23,.22,darkHair);
+   lock(-.31,.02,.08,.12,.28,.20,-.12,darkHair);
+   lock(.30,.02,.08,.12,.28,.20,.12,darkHair);
+   // A short side-swept fringe follows a diagonal line but stays above the glasses.
+   lock(-.18,.205,.285,.22,.10,.075,-.30,midHair);
+   lock(.015,.18,.29,.22,.10,.075,-.12,darkHair);
+   lock(.18,.205,.285,.18,.09,.07,.20,midHair);
    // Square black glasses, clear bridge and visible skin inside both lenses.
    const frame=mat(0x151515,.25,.15);
    for(const side of [-1,1]){
