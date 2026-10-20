@@ -192,33 +192,33 @@ body.in-fight #fight3d-fallback{inset:0}
    // Reference-matched voxel hairstyle: layered, swept dark locks and a fringe over the forehead.
    const darkHair=mat(0x302722),midHair=mat(0x40332d),hairHighlight=mat(0x514039);
    // Raise the hair cap so it sits on the skull instead of dropping like a helmet over the face.
-   haircap.material=darkHair;haircap.scale.set(.98,.62,.88);haircap.position.set(-.025,.34,-.015);
-   // Faceted clumps build a tousled side-swept hairstyle while leaving the eyes visible.
-   const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=new T.Mesh(new T.DodecahedronGeometry(1,0),color);p.position.set(x,y,z);p.scale.set(sx,sy,sz);p.rotation.z=rz;p.rotation.y=rz*.35;p.castShadow=true;head.add(p);return p;};
-   lock(-.24,.36,.015,.24,.18,.25,-.38,midHair);
-   lock(-.04,.39,.02,.25,.18,.27,-.12,hairHighlight);
-   lock(.17,.36,.015,.24,.17,.25,.25,midHair);
-   lock(.27,.25,.06,.13,.20,.22,.32,darkHair);
-   lock(-.31,.04,.10,.11,.26,.20,-.12,darkHair);
-   lock(.30,.04,.10,.11,.26,.20,.12,darkHair);
-   // Short fringe clumps angle across the forehead, above the glasses.
-   lock(-.18,.22,.285,.16,.12,.075,-.35,midHair);
-   lock(-.035,.205,.29,.16,.12,.075,-.12,darkHair);
-   lock(.11,.22,.285,.15,.11,.075,.20,midHair);
+   // A higher rounded crown and swept side fringe; avoid a flat rectangular helmet.
+   haircap.material=darkHair;haircap.scale.set(.96,.52,.82);haircap.position.set(-.025,.40,-.025);
+   const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=new T.Mesh(new T.DodecahedronGeometry(1,1),color);p.position.set(x,y,z);p.scale.set(sx,sy,sz);p.rotation.z=rz;p.rotation.y=rz*.35;p.castShadow=true;head.add(p);return p;};
+   // Crown clumps overlap higher up, with a swept part from left to right.
+   lock(-.24,.39,.015,.23,.16,.23,-.38,midHair);
+   lock(-.05,.42,.02,.25,.16,.25,-.12,hairHighlight);
+   lock(.16,.39,.015,.23,.15,.23,.25,midHair);
+   lock(.28,.29,.04,.12,.18,.20,.30,darkHair);
+   lock(-.31,.07,.08,.10,.23,.18,-.12,darkHair);
+   lock(.30,.07,.08,.10,.23,.18,.12,darkHair);
+   // Fringe is reduced to small tufts and sits above the upper glasses frame.
+   lock(-.17,.245,.285,.14,.085,.065,-.30,midHair);
+   lock(-.025,.235,.29,.14,.085,.065,-.10,darkHair);
+   lock(.11,.245,.285,.13,.08,.065,.18,midHair);
    // Square black glasses, clear bridge and visible skin inside both lenses.
    const frame=mat(0x151515,.25,.15);
    for(const side of [-1,1]){
-     cube(head,side*.145,.075,.337,.23,.025,.035,frame);
-     cube(head,side*.145,-.065,.337,.23,.025,.035,frame);
-     cube(head,side*.035,.005,.337,.025,.14,.035,frame);
-     cube(head,side*.255,.005,.337,.025,.14,.035,frame);
-     // Clearly visible square pupils behind the open frames.
-     cube(head,side*.145,.018,.321,.065,.065,.025,mat(0x171313));
+     // Glasses frames sit on the face, with the pupils centred within each lens.
+     cube(head,side*.145,.055,.355,.22,.022,.025,frame);
+     cube(head,side*.145,-.065,.355,.22,.022,.025,frame);
+     cube(head,side*.035,-.005,.355,.022,.12,.025,frame);
+     cube(head,side*.255,-.005,.355,.022,.12,.025,frame);
+     cube(head,side*.145,-.005,.341,.055,.055,.018,mat(0x171313));
    }
-   cube(head,0,.045,.35,.055,.025,.035,frame);
-   // Nose bridge and mouth line, scaled to remain visible in the arena.
-   cube(head,0,-.015,.335,.075,.12,.09,mat(0xb97858));
-   cube(head,0,-.19,.292,.16,.018,.018,mat(0x754a3b));
+   cube(head,0,.025,.36,.05,.022,.025,frame);
+   cube(head,0,-.015,.355,.065,.105,.065,mat(0xb97858));
+   cube(head,0,-.19,.31,.15,.016,.016,mat(0x754a3b));
  }else if(id==='abascal'){
    // Bald scalp and prominent dark full beard.
    haircap.scale.set(.84,.58,.78);haircap.position.y=.13;
