@@ -165,7 +165,7 @@ body.in-fight #fight3d-fallback{inset:0}
  function humanoid(id,x,colors,kind){const root=new T.Group();root.position.set(x,0,0);scene.add(root);const body=new T.Group();root.add(body);
  const skin=mat(colors.skin||0xc58c6b),suit=mat(colors.suit),shirt=mat(colors.shirt||0xe9e6df),tie=mat(colors.tie||0x54243b),hair=mat(colors.hair||0x332a25),shoe=mat(0x11131a,.4);
  // Legs with independently animated pivots.
- const pants=mat(colors.pants||colors.suit);const legs=[];for(let side of [-1,1]){const hip=new T.Group();hip.position.set(side*.27,1.15,0);body.add(hip);cube(hip,0,-.38,0,.3,.8,.38,pants).position.y=-.36;cube(hip,0,-.86,.12,.32,.18,.5,shoe);legs.push(hip);}
+ const pants=mat(colors.pants||colors.suit);const legs=[],knees=[];for(let side of [-1,1]){const hip=new T.Group();hip.position.set(side*.27,1.15,0);body.add(hip);if(id==='puigdemont'){cube(hip,0,-.25,0,.3,.52,.38,pants);const knee=new T.Group();knee.position.set(0,-.50,0);hip.add(knee);cube(knee,0,-.24,0,.29,.50,.37,pants);cube(knee,0,-.51,.12,.32,.18,.5,shoe);knees.push(knee);}else{cube(hip,0,-.38,0,.3,.8,.38,pants).position.y=-.36;cube(hip,0,-.86,.12,.32,.18,.5,shoe);knees.push(null);}legs.push(hip);}
  cube(body,0,1.72,0,.9,1.15,.48,suit);
  // Shirt opening, tie and angular jacket lapels make each formal outfit readable.
  cube(body,0,1.91,.252,.36,.7,.035,shirt);cube(body,0,1.78,.28,.12,.65,.045,tie);
@@ -208,7 +208,7 @@ body.in-fight #fight3d-fallback{inset:0}
      cube(head,side*.145,-.065,.337,.23,.025,.035,frame);
      cube(head,side*.035,.005,.337,.025,.14,.035,frame);
      cube(head,side*.255,.005,.337,.025,.14,.035,frame);
-     cube(head,side*.145,.005,.338,.16,.095,.012,mat(0xd99b70,.9));
+     // Leave the lens openings clear so the glasses read as frames, not dark filled blocks.
    }
    cube(head,0,.045,.35,.055,.025,.035,frame);
    // Small mouth line and defined nose.
@@ -233,7 +233,7 @@ body.in-fight #fight3d-fallback{inset:0}
    oval(head,-.27,-.42,-.005,.11,.25,.14,0x211b20);oval(head,.27,-.42,-.005,.11,.25,.14,0x211b20);
  }
  // Arms swing from shoulders.
- const arms=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);const arm=cube(shoulder,side*.05,-.32,.04,.23,.65,.25,suit);arm.rotation.z=side*.12;const hand=cube(shoulder,side*.06,-.68,.13,.22,.22,.22,skin);hand.castShadow=true;arms.push(shoulder);}
+ const arms=[],elbows=[];for(let side of [-1,1]){const shoulder=new T.Group();shoulder.position.set(side*.53,2.08,0);body.add(shoulder);if(id==='puigdemont'){const upper=cube(shoulder,side*.02,-.19,.04,.23,.40,.25,suit);upper.rotation.z=side*.06;const elbow=new T.Group();elbow.position.set(side*.03,-.38,.04);shoulder.add(elbow);cube(elbow,0,-.18,0,.22,.39,.24,suit);const hand=cube(elbow,side*.015,-.42,.08,.22,.20,.22,skin);hand.castShadow=true;elbows.push(elbow);}else{const arm=cube(shoulder,side*.05,-.32,.04,.23,.65,.25,suit);arm.rotation.z=side*.12;const hand=cube(shoulder,side*.06,-.68,.13,.22,.22,.22,skin);hand.castShadow=true;elbows.push(null);}arms.push(shoulder);}
  // Character identity follows the user's voxel designs: angular head, blocky clothes and signature accessories.
  if(id==='rufian'){
    // White shirt with a broad, unmistakable front panel and dark trousers.
@@ -274,8 +274,9 @@ body.in-fight #fight3d-fallback{inset:0}
  }
  cape(body,colors.cape||0x9b1b2d,kind);
  // Stand with a readable fighting pose.
- arms[0].rotation.z=-.24;arms[0].rotation.x=-.38;arms[1].rotation.z=.30;arms[1].rotation.x=-.48;
- root.userData={body,head,arms,legs,kind,id,baseX:x,phase:Math.random()*5,attackUntil:0,blockUntil:0,duckUntil:0,hitUntil:0,dead:false,celebrate:false};return root;}
+ arms[0].rotation.z=-.18;arms[0].rotation.x=-.25;arms[1].rotation.z=.20;arms[1].rotation.x=-.30;
+ if(id==='puigdemont'){elbows[0].rotation.z=-.08;elbows[1].rotation.z=.08;}
+ root.userData={body,head,arms,legs,elbows,knees,kind,id,baseX:x,phase:Math.random()*5,attackUntil:0,blockUntil:0,duckUntil:0,hitUntil:0,dead:false,celebrate:false};return root;}
  const fighters={
  sanchez:humanoid('sanchez',3.2,{skin:0xc58c6b,suit:0x182b50,pants:0x182b50,tie:0x76233b,hair:0x28252b,cape:0x182b50},'morocco'),
  abascal:humanoid('abascal',3.2,{skin:0xc58c6b,suit:0x142746,pants:0x142746,shirt:0xe8edf4,tie:0x16233b,hair:0x302722,cape:0x142746},'spain'),
