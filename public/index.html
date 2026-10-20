@@ -169,8 +169,7 @@ body.in-fight #fight3d-fallback{inset:0}
  cube(body,0,1.72,0,.9,1.15,.48,suit);
  // Avoid overlapping coplanar layers on Puigdemont's chest; they caused visible z-fighting.
  if(id==='puigdemont'){
-   cube(body,0,1.91,.265,.34,.70,.045,shirt);
-   cube(body,0,1.78,.305,.14,.56,.05,tie);
+   // Puigdemont's complete shirt and tie are built once in his custom outfit block below.
  }else{
    // Shirt opening, tie and angular jacket lapels for the other fighters.
    cube(body,0,1.91,.252,.36,.7,.035,shirt);cube(body,0,1.78,.28,.12,.65,.045,tie);
@@ -192,19 +191,19 @@ body.in-fight #fight3d-fallback{inset:0}
  if(id==='puigdemont'){
    // Reference-matched voxel hairstyle: layered, swept dark locks and a fringe over the forehead.
    const darkHair=mat(0x302722),midHair=mat(0x40332d),hairHighlight=mat(0x514039);
-   haircap.material=darkHair;haircap.scale.set(.98,.86,.90);haircap.position.set(-.025,.22,-.015);
-   // Shorter layered locks create a softer, swept hairstyle without huge slabs over the glasses.
-   const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=cube(head,x,y,z,sx,sy,sz,color);p.rotation.z=rz;return p;};
-   lock(-.31,.015,.12,.14,.34,.27,-.12,darkHair);
-   lock(.30,.015,.12,.14,.34,.27,.12,darkHair);
-   lock(-.22,.30,.015,.27,.17,.29,-.38,midHair);
-   lock(.00,.33,.025,.28,.17,.29,-.12,hairHighlight);
-   lock(.22,.29,.015,.27,.17,.29,.25,midHair);
-   lock(.29,.18,.06,.17,.19,.27,.32,darkHair);
-   // Fringe pieces sit above the eyebrows and leave both lenses unobstructed.
-   lock(-.18,.17,.286,.18,.17,.10,-.42,midHair);
-   lock(-.035,.145,.292,.17,.18,.10,-.18,darkHair);
-   lock(.105,.16,.286,.16,.16,.10,.18,midHair);
+   haircap.material=darkHair;haircap.scale.set(.98,.88,.90);haircap.position.set(-.025,.24,-.015);
+   // Use small faceted clumps rather than broad flat cubes for the reference's textured hair.
+   const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=new T.Mesh(new T.DodecahedronGeometry(1,0),color);p.position.set(x,y,z);p.scale.set(sx,sy,sz);p.rotation.z=rz;p.rotation.y=rz*.35;p.castShadow=true;head.add(p);return p;};
+   // Layered crown volume, dark sides and a swept fringe; keep glasses and eyebrows clear.
+   lock(-.24,.31,.015,.25,.19,.27,-.38,midHair);
+   lock(-.04,.35,.02,.27,.19,.29,-.12,hairHighlight);
+   lock(.18,.31,.015,.25,.18,.27,.25,midHair);
+   lock(.29,.20,.06,.15,.22,.25,.32,darkHair);
+   lock(-.32,.01,.10,.12,.30,.22,-.12,darkHair);
+   lock(.31,.01,.10,.12,.30,.22,.12,darkHair);
+   lock(-.17,.18,.292,.17,.13,.09,-.35,midHair);
+   lock(-.025,.16,.30,.17,.14,.09,-.12,darkHair);
+   lock(.12,.18,.292,.16,.13,.09,.20,midHair);
    // Square black glasses, clear bridge and visible skin inside both lenses.
    const frame=mat(0x151515,.25,.15);
    for(const side of [-1,1]){
@@ -212,7 +211,8 @@ body.in-fight #fight3d-fallback{inset:0}
      cube(head,side*.145,-.065,.337,.23,.025,.035,frame);
      cube(head,side*.035,.005,.337,.025,.14,.035,frame);
      cube(head,side*.255,.005,.337,.025,.14,.035,frame);
-     // Leave the lens openings clear so the glasses read as frames, not dark filled blocks.
+     // Clearly visible square pupils behind the open frames.
+     cube(head,side*.145,.018,.321,.065,.065,.025,mat(0x171313));
    }
    cube(head,0,.045,.35,.055,.025,.035,frame);
    // Small mouth line and defined nose.
