@@ -312,8 +312,8 @@ body.in-fight #fight3d-fallback{inset:0}
    // Shirt collar and a tapered blue tie.
    const collarL=cube(body,-.075,2.17,.255,.14,.13,.035,shirt);collarL.rotation.z=-.25;
    const collarR=cube(body,.075,2.17,.255,.14,.13,.035,shirt);collarR.rotation.z=.25;
-   cube(body,0,1.70,.264,.125,.50,.04,tie);
-   const tieKnot=cube(body,0,1.99,.273,.16,.13,.045,tie);
+   cube(body,0,1.70,.285,.125,.50,.045,tie);
+   const tieKnot=cube(body,0,1.99,.294,.16,.13,.05,tie);
    // Jacket lapels are clean, slim and symmetrical.
    const lapelL=cube(body,-.17,1.96,.267,.13,.43,.035,lapelMat);lapelL.rotation.z=-.36;
    const lapelR=cube(body,.17,1.96,.267,.13,.43,.035,lapelMat);lapelR.rotation.z=.36;
@@ -351,23 +351,23 @@ body.in-fight #fight3d-fallback{inset:0}
    hairMesh.position.z=.16;hairMesh.castShadow=true;head.add(hairMesh);
    // Separate angular locks add layered volume and a side-swept direction.
    const lock=(x,y,z,sx,sy,sz,rz,m)=>{const p=cube(head,x,y,z,sx,sy,sz,m);p.rotation.z=rz;p.rotation.y=rz*.15;return p;};
-   lock(-.20,.375,.295,.20,.075,.045,-.30,hairMid);
-   lock(-.045,.405,.30,.21,.07,.045,-.12,hairLight);
-   lock(.12,.375,.295,.18,.065,.04,.20,hairMid);
-   lock(.25,.315,.275,.12,.07,.04,.35,hair);
-   // Short side locks frame the face, ending above the jaw.
-   lock(-.325,-.035,.035,.055,.20,.12,-.02,hair);
-   lock(.325,-.025,.035,.05,.18,.11,.02,hairMid);
+   // Fine, swept layers add direction to the hair without making a thick blocky fringe.
+   lock(-.20,.405,.292,.20,.045,.035,-.30,hairMid);
+   lock(-.045,.425,.298,.21,.04,.035,-.12,hairLight);
+   lock(.12,.405,.292,.18,.04,.032,.20,hairMid);
+   lock(.25,.345,.275,.11,.045,.03,.35,hair);
+   // Narrow sideburns sit behind the temples and do not cover the cheeks.
+   lock(-.337,-.045,.035,.035,.17,.09,-.02,hair);
+   lock(.337,-.035,.035,.03,.15,.08,.02,hairMid);
    // Rectangular glasses: open lenses, thin black frames, small dark eyes centred inside.
    const frame=mat(0x111113),eye=mat(0x171313);
    for(const side of [-1,1]){
-     // Put the eyes clearly in front of the face, inside each lens.
+     // Keep each eye centred and readable inside the rectangular lenses.
      cube(head,side*.135,.035,.305,.19,.022,.024,frame);
      cube(head,side*.135,-.065,.305,.19,.022,.024,frame);
      cube(head,side*.04,-.015,.305,.022,.10,.024,frame);
      cube(head,side*.23,-.015,.305,.022,.10,.024,frame);
-     cube(head,side*.135,-.012,.30,.065,.052,.024,eye);
-     cube(head,side*.135,-.012,.315,.026,.034,.012,mat(0xf1e5d4));
+     cube(head,side*.135,-.012,.312,.048,.048,.02,eye);
    }
    cube(head,0,.005,.309,.04,.018,.024,frame);
    // Fully articulated arms: shoulder, elbow, forearm and hand.
