@@ -191,19 +191,20 @@ body.in-fight #fight3d-fallback{inset:0}
  if(id==='puigdemont'){
    // Reference-matched voxel hairstyle: layered, swept dark locks and a fringe over the forehead.
    const darkHair=mat(0x302722),midHair=mat(0x40332d),hairHighlight=mat(0x514039);
-   haircap.material=darkHair;haircap.scale.set(.98,.88,.90);haircap.position.set(-.025,.24,-.015);
-   // Use small faceted clumps rather than broad flat cubes for the reference's textured hair.
+   // Raise the hair cap so it sits on the skull instead of dropping like a helmet over the face.
+   haircap.material=darkHair;haircap.scale.set(.98,.62,.88);haircap.position.set(-.025,.34,-.015);
+   // Faceted clumps build a tousled side-swept hairstyle while leaving the eyes visible.
    const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=new T.Mesh(new T.DodecahedronGeometry(1,0),color);p.position.set(x,y,z);p.scale.set(sx,sy,sz);p.rotation.z=rz;p.rotation.y=rz*.35;p.castShadow=true;head.add(p);return p;};
-   // Layered crown volume, dark sides and a swept fringe; keep glasses and eyebrows clear.
-   lock(-.24,.31,.015,.25,.19,.27,-.38,midHair);
-   lock(-.04,.35,.02,.27,.19,.29,-.12,hairHighlight);
-   lock(.18,.31,.015,.25,.18,.27,.25,midHair);
-   lock(.29,.20,.06,.15,.22,.25,.32,darkHair);
-   lock(-.32,.01,.10,.12,.30,.22,-.12,darkHair);
-   lock(.31,.01,.10,.12,.30,.22,.12,darkHair);
-   lock(-.17,.18,.292,.17,.13,.09,-.35,midHair);
-   lock(-.025,.16,.30,.17,.14,.09,-.12,darkHair);
-   lock(.12,.18,.292,.16,.13,.09,.20,midHair);
+   lock(-.24,.36,.015,.24,.18,.25,-.38,midHair);
+   lock(-.04,.39,.02,.25,.18,.27,-.12,hairHighlight);
+   lock(.17,.36,.015,.24,.17,.25,.25,midHair);
+   lock(.27,.25,.06,.13,.20,.22,.32,darkHair);
+   lock(-.31,.04,.10,.11,.26,.20,-.12,darkHair);
+   lock(.30,.04,.10,.11,.26,.20,.12,darkHair);
+   // Short fringe clumps angle across the forehead, above the glasses.
+   lock(-.18,.22,.285,.16,.12,.075,-.35,midHair);
+   lock(-.035,.205,.29,.16,.12,.075,-.12,darkHair);
+   lock(.11,.22,.285,.15,.11,.075,.20,midHair);
    // Square black glasses, clear bridge and visible skin inside both lenses.
    const frame=mat(0x151515,.25,.15);
    for(const side of [-1,1]){
@@ -215,8 +216,9 @@ body.in-fight #fight3d-fallback{inset:0}
      cube(head,side*.145,.018,.321,.065,.065,.025,mat(0x171313));
    }
    cube(head,0,.045,.35,.055,.025,.035,frame);
-   // Small mouth line and defined nose.
-   cube(head,0,-.19,.286,.17,.018,.018,mat(0x80513e));
+   // Nose bridge and mouth line, scaled to remain visible in the arena.
+   cube(head,0,-.015,.335,.075,.12,.09,mat(0xb97858));
+   cube(head,0,-.19,.292,.16,.018,.018,mat(0x754a3b));
  }else if(id==='abascal'){
    // Bald scalp and prominent dark full beard.
    haircap.scale.set(.84,.58,.78);haircap.position.y=.13;
@@ -259,8 +261,8 @@ body.in-fight #fight3d-fallback{inset:0}
    const lapel=mat(0x29282c),tieBlue=mat(0x26366f),gold=mat(0xffd21f),pocket=mat(0x201f23);
    // Shirt and tie sit behind the jacket edges with small depth offsets to prevent flicker.
    cube(body,0,1.88,.305,.30,.70,.035,shirt);
-   cube(body,0,1.76,.335,.14,.52,.045,tieBlue);
-   cube(body,0,2.045,.337,.18,.13,.045,tieBlue);
+   cube(body,0,1.76,.355,.14,.52,.045,tieBlue);
+   cube(body,0,2.045,.357,.18,.13,.045,tieBlue);
    cube(body,-.12,2.19,.30,.17,.12,.04,shirt);cube(body,.12,2.19,.30,.17,.12,.04,shirt);
    // One clean jacket silhouette, avoiding duplicate lapels and overlapping shirt panels.
    const frontL=cube(body,-.28,1.72,.315,.30,1.02,.055,lapel);frontL.rotation.z=-.025;
