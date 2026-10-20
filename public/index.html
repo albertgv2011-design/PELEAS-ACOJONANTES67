@@ -339,13 +339,14 @@ body.in-fight #fight3d-fallback{inset:0}
    cube(head,0,-.205,.225,.12,.014,.012,mat(0x805342));
    // Hair silhouette: a swept side-parted crown, with a softly stepped fringe rather than a sawtooth edge.
    const outline=new T.Shape();
-   outline.moveTo(-.335,.025);outline.lineTo(-.36,.20);outline.lineTo(-.32,.36);
-   outline.lineTo(-.23,.445);outline.lineTo(-.10,.475);outline.lineTo(.045,.47);
-   outline.lineTo(.19,.435);outline.lineTo(.31,.35);outline.lineTo(.35,.23);
-   outline.lineTo(.32,.18);outline.lineTo(.265,.195);outline.lineTo(.21,.16);
-   outline.lineTo(.145,.205);outline.lineTo(.075,.17);outline.lineTo(.005,.215);
-   outline.lineTo(-.07,.18);outline.lineTo(-.145,.225);outline.lineTo(-.22,.18);
-   outline.lineTo(-.285,.21);outline.closePath();
+   // Smooth crown silhouette with a few deliberate swept fringe points (not a repeated sawtooth).
+   outline.moveTo(-.34,.035);outline.lineTo(-.36,.22);outline.lineTo(-.31,.37);
+   outline.lineTo(-.22,.455);outline.lineTo(-.08,.49);outline.lineTo(.08,.48);
+   outline.lineTo(.22,.44);outline.lineTo(.32,.35);outline.lineTo(.35,.24);
+   outline.lineTo(.32,.18);outline.lineTo(.27,.19);outline.lineTo(.21,.155);
+   outline.lineTo(.13,.19);outline.lineTo(.055,.16);outline.lineTo(-.02,.205);
+   outline.lineTo(-.10,.17);outline.lineTo(-.18,.215);outline.lineTo(-.25,.17);
+   outline.lineTo(-.31,.205);outline.closePath();
    const hairMesh=new T.Mesh(new T.ExtrudeGeometry(outline,{depth:.12,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:.012,bevelThickness:.01}),hair);
    hairMesh.position.z=.16;hairMesh.castShadow=true;head.add(hairMesh);
    // Separate angular locks add layered volume and a side-swept direction.
@@ -358,15 +359,17 @@ body.in-fight #fight3d-fallback{inset:0}
    lock(-.325,-.035,.035,.055,.20,.12,-.02,hair);
    lock(.325,-.025,.035,.05,.18,.11,.02,hairMid);
    // Rectangular glasses: open lenses, thin black frames, small dark eyes centred inside.
-   const frame=mat(0x141416);
+   const frame=mat(0x111113),eye=mat(0x171313);
    for(const side of [-1,1]){
-     cube(head,side*.135,.035,.279,.19,.018,.022,frame);
-     cube(head,side*.135,-.065,.279,.19,.018,.022,frame);
-     cube(head,side*.04,-.015,.279,.018,.10,.022,frame);
-     cube(head,side*.23,-.015,.279,.018,.10,.022,frame);
-     cube(head,side*.135,-.015,.267,.038,.042,.014,mat(0x171313));
+     // Put the eyes clearly in front of the face, inside each lens.
+     cube(head,side*.135,.035,.305,.19,.022,.024,frame);
+     cube(head,side*.135,-.065,.305,.19,.022,.024,frame);
+     cube(head,side*.04,-.015,.305,.022,.10,.024,frame);
+     cube(head,side*.23,-.015,.305,.022,.10,.024,frame);
+     cube(head,side*.135,-.012,.30,.065,.052,.024,eye);
+     cube(head,side*.135,-.012,.315,.026,.034,.012,mat(0xf1e5d4));
    }
-   cube(head,0,.005,.282,.04,.016,.02,frame);
+   cube(head,0,.005,.309,.04,.018,.024,frame);
    // Fully articulated arms: shoulder, elbow, forearm and hand.
    const arms=[],elbows=[];
    for(const side of [-1,1]){
