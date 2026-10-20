@@ -334,28 +334,30 @@ body.in-fight #fight3d-fallback{inset:0}
    face.position.z=-.22;face.castShadow=true;head.add(face);
    cube(head,-.305,-.035,.015,.075,.15,.12,skin);cube(head,.305,-.035,.015,.075,.15,.12,skin);
    // Nose bridge and tip, kept small so it does not look like a projecting block.
-   cube(head,0,-.015,.245,.045,.10,.055,skinShade);
-   cube(head,0,-.055,.27,.065,.045,.045,skin);
-   cube(head,0,-.205,.225,.12,.014,.012,mat(0x805342));
+   cube(head,0,-.012,.247,.038,.075,.045,skinShade);
+   cube(head,0,-.048,.268,.052,.032,.035,skin);
+   cube(head,0,-.205,.229,.105,.012,.012,mat(0x805342));
    // Hair silhouette: a swept side-parted crown, with a softly stepped fringe rather than a sawtooth edge.
    const outline=new T.Shape();
    // Smooth crown silhouette with a few deliberate swept fringe points (not a repeated sawtooth).
-   outline.moveTo(-.34,.035);outline.lineTo(-.36,.22);outline.lineTo(-.31,.37);
-   outline.lineTo(-.22,.455);outline.lineTo(-.08,.49);outline.lineTo(.08,.48);
-   outline.lineTo(.22,.44);outline.lineTo(.32,.35);outline.lineTo(.35,.24);
-   outline.lineTo(.32,.18);outline.lineTo(.27,.19);outline.lineTo(.21,.155);
-   outline.lineTo(.13,.19);outline.lineTo(.055,.16);outline.lineTo(-.02,.205);
-   outline.lineTo(-.10,.17);outline.lineTo(-.18,.215);outline.lineTo(-.25,.17);
-   outline.lineTo(-.31,.205);outline.closePath();
+   outline.moveTo(-.34,.015);outline.lineTo(-.37,.20);outline.lineTo(-.33,.35);
+   outline.lineTo(-.25,.445);outline.lineTo(-.13,.49);outline.lineTo(.015,.50);
+   outline.lineTo(.16,.465);outline.lineTo(.27,.40);outline.lineTo(.35,.29);
+   outline.lineTo(.36,.22);
+   // Asymmetric swept fringe: one longer lock on the left, shorter steps to the right.
+   outline.lineTo(.30,.18);outline.lineTo(.23,.205);outline.lineTo(.16,.16);
+   outline.lineTo(.075,.195);outline.lineTo(-.005,.15);outline.lineTo(-.085,.205);
+   outline.lineTo(-.16,.16);outline.lineTo(-.235,.235);outline.lineTo(-.30,.18);
+   outline.closePath();
    const hairMesh=new T.Mesh(new T.ExtrudeGeometry(outline,{depth:.12,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:.012,bevelThickness:.01}),hair);
    hairMesh.position.z=.16;hairMesh.castShadow=true;head.add(hairMesh);
    // Separate angular locks add layered volume and a side-swept direction.
    const lock=(x,y,z,sx,sy,sz,rz,m)=>{const p=cube(head,x,y,z,sx,sy,sz,m);p.rotation.z=rz;p.rotation.y=rz*.15;return p;};
    // Fine, swept layers add direction to the hair without making a thick blocky fringe.
-   lock(-.20,.405,.292,.20,.045,.035,-.30,hairMid);
-   lock(-.045,.425,.298,.21,.04,.035,-.12,hairLight);
-   lock(.12,.405,.292,.18,.04,.032,.20,hairMid);
-   lock(.25,.345,.275,.11,.045,.03,.35,hair);
+   lock(-.22,.405,.292,.20,.035,.03,-.34,hairMid);
+   lock(-.055,.435,.298,.20,.032,.03,-.16,hairLight);
+   lock(.11,.412,.292,.17,.03,.028,.18,hairMid);
+   lock(.245,.36,.275,.10,.032,.026,.32,hair);
    // Narrow sideburns sit behind the temples and do not cover the cheeks.
    lock(-.337,-.045,.035,.035,.17,.09,-.02,hair);
    lock(.337,-.035,.035,.03,.15,.08,.02,hairMid);
