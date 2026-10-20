@@ -295,76 +295,89 @@ body.in-fight #fight3d-fallback{inset:0}
  function puigdemontFromScratch(x){
    const root=new T.Group();root.position.set(x,0,0);scene.add(root);
    const body=new T.Group();root.add(body);
-   const skin=mat(0xc58c6b),suit=mat(0x171719),shirt=mat(0xf2f0ed),tie=mat(0x26366f),hair=mat(0x302722),hairMid=mat(0x40332d),shoe=mat(0x101014),gold=mat(0xffd21f);
-   // Straight, tailored trousers with knee pivots and square shoes.
+   const skin=mat(0xc98f70),skinShade=mat(0xb9785c),suit=mat(0x19191c),lapelMat=mat(0x252529),shirt=mat(0xf4f1ec),tie=mat(0x283773),hair=mat(0x302722),hairMid=mat(0x40332d),hairLight=mat(0x514138),shoe=mat(0x101014),gold=mat(0xffd21f);
+   // Tailored trousers: slightly tapered, with true knee pivots and separate shoes.
    const legs=[],knees=[];
    for(const side of [-1,1]){
-     const hip=new T.Group();hip.position.set(side*.25,1.18,0);body.add(hip);
-     cube(hip,0,-.24,0,.29,.50,.36,suit);
-     const knee=new T.Group();knee.position.set(0,-.49,0);hip.add(knee);
-     cube(knee,0,-.23,0,.28,.48,.35,suit);
-     cube(knee,0,-.49,.12,.32,.17,.48,shoe);
+     const hip=new T.Group();hip.position.set(side*.235,1.17,0);body.add(hip);
+     const upper=cube(hip,0,-.23,0,.265,.48,.34,suit);
+     const knee=new T.Group();knee.position.set(0,-.46,0);hip.add(knee);
+     cube(knee,0,-.22,0,.25,.44,.33,suit);
+     cube(knee,0,-.455,.115,.30,.15,.43,shoe);
      legs.push(hip);knees.push(knee);
    }
-   // Torso: one jacket shell, white shirt insert, tie and sharply defined lapels.
-   cube(body,0,1.73,0,.88,1.10,.45,suit);
-   cube(body,0,1.86,.235,.31,.76,.035,shirt);
-   cube(body,0,1.69,.272,.14,.53,.045,tie);
-   cube(body,0,1.99,.275,.18,.13,.045,tie);
-   const lapelL=cube(body,-.19,1.98,.275,.17,.48,.04,mat(0x252529));lapelL.rotation.z=-.31;
-   const lapelR=cube(body,.19,1.98,.275,.17,.48,.04,mat(0x252529));lapelR.rotation.z=.31;
-   cube(body,-.27,1.31,.24,.21,.07,.025,mat(0x202024));cube(body,.27,1.31,.24,.21,.07,.025,mat(0x202024));
-   // Small yellow ribbon on the wearer's left lapel (viewer right).
-   const loopA=cube(body,.285,2.06,.315,.055,.11,.035,gold);loopA.rotation.z=-.55;
-   const loopB=cube(body,.335,2.06,.317,.055,.11,.035,gold);loopB.rotation.z=.55;
-   const tailA=cube(body,.29,1.98,.32,.045,.11,.035,gold);tailA.rotation.z=.35;
-   const tailB=cube(body,.34,1.98,.322,.045,.11,.035,gold);tailB.rotation.z=-.35;
-   // Neck and a broad, proportioned head.
-   cube(body,0,2.37,0,.19,.20,.18,skin);
-   const head=new T.Group();head.position.set(0,2.72,.02);body.add(head);
-   const face=new T.Mesh(new T.BoxGeometry(.66,.76,.48),skin);face.castShadow=true;head.add(face);
-   // Ears and nose are attached to the same head pivot.
-   cube(head,-.34,-.015,0,.08,.17,.13,skin);cube(head,.34,-.015,0,.08,.17,.13,skin);
-   cube(head,0,-.015,.265,.07,.10,.065,mat(0xb97858));
-   cube(head,0,-.19,.249,.14,.016,.014,mat(0x754a3b));
-   // Hair from a clean custom extruded silhouette: high crown, side part and uneven swept fringe.
+   // Jacket body with shoulders and hem shaped as a single clean silhouette.
+   cube(body,0,1.72,0,.84,1.06,.42,suit);
+   cube(body,0,1.83,.222,.285,.73,.032,shirt);
+   // Shirt collar and a tapered blue tie.
+   const collarL=cube(body,-.075,2.17,.255,.14,.13,.035,shirt);collarL.rotation.z=-.25;
+   const collarR=cube(body,.075,2.17,.255,.14,.13,.035,shirt);collarR.rotation.z=.25;
+   cube(body,0,1.70,.264,.125,.50,.04,tie);
+   const tieKnot=cube(body,0,1.99,.273,.16,.13,.045,tie);
+   // Jacket lapels are clean, slim and symmetrical.
+   const lapelL=cube(body,-.17,1.96,.267,.13,.43,.035,lapelMat);lapelL.rotation.z=-.36;
+   const lapelR=cube(body,.17,1.96,.267,.13,.43,.035,lapelMat);lapelR.rotation.z=.36;
+   cube(body,-.255,1.31,.225,.19,.055,.025,mat(0x222226));
+   cube(body,.255,1.31,.225,.19,.055,.025,mat(0x222226));
+   // Small yellow ribbon with a recognisable loop and two short tails.
+   const loopA=cube(body,.265,2.06,.307,.045,.10,.028,gold);loopA.rotation.z=-.55;
+   const loopB=cube(body,.307,2.06,.309,.045,.10,.028,gold);loopB.rotation.z=.55;
+   const tailA=cube(body,.27,1.985,.31,.038,.085,.028,gold);tailA.rotation.z=.32;
+   const tailB=cube(body,.31,1.985,.312,.038,.085,.028,gold);tailB.rotation.z=-.32;
+   // Neck, head and subtly narrowed jaw. All face pieces follow the head pivot.
+   cube(body,0,2.34,0,.18,.18,.17,skin);
+   const head=new T.Group();head.position.set(0,2.69,.02);body.add(head);
+   const faceShape=new T.Shape();
+   faceShape.moveTo(-.285,.34);faceShape.lineTo(.285,.34);faceShape.lineTo(.30,-.18);
+   faceShape.lineTo(.22,-.36);faceShape.lineTo(-.22,-.36);faceShape.lineTo(-.30,-.18);faceShape.closePath();
+   const face=new T.Mesh(new T.ExtrudeGeometry(faceShape,{depth:.44,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:.008,bevelThickness:.008}),skin);
+   face.position.z=-.22;face.castShadow=true;head.add(face);
+   cube(head,-.305,-.035,.015,.075,.15,.12,skin);cube(head,.305,-.035,.015,.075,.15,.12,skin);
+   // Nose bridge and tip, kept small so it does not look like a projecting block.
+   cube(head,0,-.015,.245,.045,.10,.055,skinShade);
+   cube(head,0,-.055,.27,.065,.045,.045,skin);
+   cube(head,0,-.205,.225,.12,.014,.012,mat(0x805342));
+   // Hair silhouette: a swept side-parted crown, with a softly stepped fringe rather than a sawtooth edge.
    const outline=new T.Shape();
-   outline.moveTo(-.36,.06);outline.lineTo(-.38,.26);outline.lineTo(-.31,.42);
-   outline.lineTo(-.20,.49);outline.lineTo(-.06,.51);outline.lineTo(.10,.49);
-   outline.lineTo(.25,.44);outline.lineTo(.36,.32);outline.lineTo(.36,.18);
-   outline.lineTo(.29,.15);outline.lineTo(.22,.20);outline.lineTo(.14,.13);
-   outline.lineTo(.06,.19);outline.lineTo(-.02,.14);outline.lineTo(-.11,.21);
-   outline.lineTo(-.20,.15);outline.lineTo(-.29,.21);outline.closePath();
-   const hairMesh=new T.Mesh(new T.ExtrudeGeometry(outline,{depth:.13,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:.01,bevelThickness:.01}),hair);
-   hairMesh.position.z=.17;hairMesh.castShadow=true;head.add(hairMesh);
-   const tuft=(x,y,z,sx,sy,sz,rz,m)=>{const p=cube(head,x,y,z,sx,sy,sz,m);p.rotation.z=rz;return p;};
-   tuft(-.20,.37,.32,.22,.09,.045,-.30,hairMid);
-   tuft(-.035,.39,.33,.22,.08,.045,-.10,hair);
-   tuft(.13,.35,.32,.19,.075,.04,.20,hairMid);
-   tuft(-.36,-.04,.06,.06,.23,.14,-.03,hair);
-   tuft(.35,-.035,.06,.06,.21,.13,.03,hair);
-   // Square glasses with open lens area and centred pupils.
-   const frame=mat(0x111113);
+   outline.moveTo(-.335,.025);outline.lineTo(-.36,.20);outline.lineTo(-.32,.36);
+   outline.lineTo(-.23,.445);outline.lineTo(-.10,.475);outline.lineTo(.045,.47);
+   outline.lineTo(.19,.435);outline.lineTo(.31,.35);outline.lineTo(.35,.23);
+   outline.lineTo(.32,.18);outline.lineTo(.265,.195);outline.lineTo(.21,.16);
+   outline.lineTo(.145,.205);outline.lineTo(.075,.17);outline.lineTo(.005,.215);
+   outline.lineTo(-.07,.18);outline.lineTo(-.145,.225);outline.lineTo(-.22,.18);
+   outline.lineTo(-.285,.21);outline.closePath();
+   const hairMesh=new T.Mesh(new T.ExtrudeGeometry(outline,{depth:.12,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:.012,bevelThickness:.01}),hair);
+   hairMesh.position.z=.16;hairMesh.castShadow=true;head.add(hairMesh);
+   // Separate angular locks add layered volume and a side-swept direction.
+   const lock=(x,y,z,sx,sy,sz,rz,m)=>{const p=cube(head,x,y,z,sx,sy,sz,m);p.rotation.z=rz;p.rotation.y=rz*.15;return p;};
+   lock(-.20,.375,.295,.20,.075,.045,-.30,hairMid);
+   lock(-.045,.405,.30,.21,.07,.045,-.12,hairLight);
+   lock(.12,.375,.295,.18,.065,.04,.20,hairMid);
+   lock(.25,.315,.275,.12,.07,.04,.35,hair);
+   // Short side locks frame the face, ending above the jaw.
+   lock(-.325,-.035,.035,.055,.20,.12,-.02,hair);
+   lock(.325,-.025,.035,.05,.18,.11,.02,hairMid);
+   // Rectangular glasses: open lenses, thin black frames, small dark eyes centred inside.
+   const frame=mat(0x141416);
    for(const side of [-1,1]){
-     cube(head,side*.14,.045,.292,.21,.022,.024,frame);
-     cube(head,side*.14,-.065,.292,.21,.022,.024,frame);
-     cube(head,side*.035,-.01,.292,.022,.11,.024,frame);
-     cube(head,side*.245,-.01,.292,.022,.11,.024,frame);
-     cube(head,side*.14,-.01,.278,.05,.05,.016,mat(0x171313));
+     cube(head,side*.135,.035,.279,.19,.018,.022,frame);
+     cube(head,side*.135,-.065,.279,.19,.018,.022,frame);
+     cube(head,side*.04,-.015,.279,.018,.10,.022,frame);
+     cube(head,side*.23,-.015,.279,.018,.10,.022,frame);
+     cube(head,side*.135,-.015,.267,.038,.042,.014,mat(0x171313));
    }
-   cube(head,0,.005,.295,.045,.02,.024,frame);
-   // Independently articulated upper arms, elbows, forearms and hands.
+   cube(head,0,.005,.282,.04,.016,.02,frame);
+   // Fully articulated arms: shoulder, elbow, forearm and hand.
    const arms=[],elbows=[];
    for(const side of [-1,1]){
-     const shoulder=new T.Group();shoulder.position.set(side*.51,2.08,0);body.add(shoulder);
-     const upper=cube(shoulder,side*.02,-.18,.02,.22,.38,.23,suit);upper.rotation.z=side*.04;
-     const elbow=new T.Group();elbow.position.set(side*.025,-.36,.025);shoulder.add(elbow);
-     cube(elbow,0,-.17,.01,.21,.36,.22,suit);
-     cube(elbow,side*.01,-.39,.08,.19,.18,.19,skin);
+     const shoulder=new T.Group();shoulder.position.set(side*.49,2.04,0);body.add(shoulder);
+     cube(shoulder,side*.015,-.17,.015,.21,.36,.22,suit);
+     const elbow=new T.Group();elbow.position.set(side*.02,-.34,.02);shoulder.add(elbow);
+     cube(elbow,0,-.16,.01,.20,.34,.21,suit);
+     cube(elbow,side*.01,-.355,.075,.18,.17,.18,skin);
      arms.push(shoulder);elbows.push(elbow);
    }
-   // Calm T-pose-ish stance; existing battle animator drives these pivots.
-   arms[0].rotation.z=-.22;arms[0].rotation.x=-.28;arms[1].rotation.z=.24;arms[1].rotation.x=-.32;
+   arms[0].rotation.z=-.20;arms[0].rotation.x=-.25;arms[1].rotation.z=.22;arms[1].rotation.x=-.29;
    root.userData={body,head,arms,legs,elbows,knees,kind:'estelada',id:'puigdemont',baseX:x,phase:1.7,attackUntil:0,blockUntil:0,duckUntil:0,hitUntil:0,dead:false,celebrate:false};
    return root;
  }
