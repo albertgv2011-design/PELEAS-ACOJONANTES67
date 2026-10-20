@@ -201,21 +201,21 @@ body.in-fight #fight3d-fallback{inset:0}
    // Smaller raised cap exposes the forehead and gives the hair a natural, sculpted outline.
    // Rounded skull cap gives a curved silhouette instead of a flat rectangular helmet.
    haircap.geometry.dispose();
-   // Use only the upper hemisphere: a full sphere created a bald, round helmet hanging over the forehead.
-   haircap.geometry=new T.SphereGeometry(1,10,6,0,Math.PI*2,0,Math.PI/2);
-   haircap.material=darkHair;haircap.scale.set(.49,.43,.43);haircap.position.set(-.025,.36,-.035);
+   // A shallow, angular crown that sits on top of the skull rather than a dome/helmet.
+   haircap.geometry=new T.BoxGeometry(1,1,1);
+   haircap.material=darkHair;haircap.scale.set(.90,.25,.76);haircap.position.set(-.025,.48,-.035);
    const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=cube(head,x,y,z,sx,sy,sz,color);p.rotation.z=rz;p.rotation.y=rz*.25;return p;};
    // Layered crown follows a side part; use several narrow angled locks rather than a flat slab.
-   lock(-.23,.40,.015,.29,.13,.23,-.30,midHair);
-   lock(-.04,.43,.025,.27,.13,.24,-.10,darkHair);
-   lock(.15,.40,.015,.25,.12,.22,.22,midHair);
-   lock(.27,.30,.045,.12,.18,.20,.18,darkHair);
-   lock(-.32,.045,.08,.10,.25,.18,-.10,darkHair);
-   lock(.30,.045,.08,.10,.25,.18,.10,darkHair);
-   // Lift the fringe so it frames the forehead instead of covering the eyebrows and glasses.
-   lock(-.19,.285,.285,.18,.075,.065,-.38,midHair);
-   lock(-.025,.27,.29,.17,.07,.065,-.12,darkHair);
-   lock(.13,.285,.285,.15,.065,.06,.18,midHair);
+   lock(-.24,.48,.015,.30,.11,.23,-.30,midHair);
+   lock(-.04,.49,.025,.29,.11,.24,-.10,darkHair);
+   lock(.17,.47,.015,.27,.10,.22,.22,midHair);
+   lock(.29,.32,.045,.11,.17,.18,.18,darkHair);
+   lock(-.32,.035,.08,.10,.24,.18,-.10,darkHair);
+   lock(.30,.035,.08,.10,.24,.18,.10,darkHair);
+   // Short angular fringe pieces stay near the hairline, not down across the face.
+   lock(-.19,.31,.285,.18,.075,.065,-.38,midHair);
+   lock(-.025,.30,.29,.17,.065,.065,-.12,darkHair);
+   lock(.13,.31,.285,.15,.06,.06,.18,midHair);
    // Square black glasses, clear bridge and visible skin inside both lenses.
    const frame=mat(0x151515,.25,.15);
    for(const side of [-1,1]){
