@@ -195,33 +195,29 @@ body.in-fight #fight3d-fallback{inset:0}
  const oval=(parent,x,y,z,sx,sy,sz,color)=>{const m=new T.Mesh(new T.BoxGeometry(1,1,1),mat(color));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;parent.add(m);return m;};
  const beardColor=(id==='puigdemont')?0x898984:(id==='abascal')?0x302923:(id==='rufian')?0x3b302a:0x6d625b;
  if(id==='puigdemont'){
-   // Rebuilt hair silhouette from a custom extruded polygon, instead of a cap plus random blocks.
-   const darkHair=mat(0x302722),midHair=mat(0x40332d),hairHighlight=mat(0x493a32);
+   // Fresh rebuild of the supplied voxel reference: one coherent hair silhouette, not a pile of caps.
+   const darkHair=mat(0x302722),hairMid=mat(0x3a2e28),hairLight=mat(0x493a32);
    haircap.visible=false;
-   const hairShape=new T.Shape();
-   hairShape.moveTo(-.39,.12);
-   hairShape.lineTo(-.40,.31);hairShape.lineTo(-.32,.43);
-   hairShape.lineTo(-.20,.49);hairShape.lineTo(-.04,.51);
-   hairShape.lineTo(.13,.49);hairShape.lineTo(.29,.43);
-   hairShape.lineTo(.38,.32);hairShape.lineTo(.38,.14);
-   // Uneven, side-swept hairline: distinct points instead of a straight helmet edge.
-   hairShape.lineTo(.29,.18);hairShape.lineTo(.22,.12);
-   hairShape.lineTo(.16,.20);hairShape.lineTo(.08,.16);
-   hairShape.lineTo(.01,.22);hairShape.lineTo(-.08,.17);
-   hairShape.lineTo(-.17,.23);hairShape.lineTo(-.25,.16);
-   hairShape.lineTo(-.32,.20);hairShape.lineTo(-.39,.12);
-   const hairMesh=new T.Mesh(new T.ExtrudeGeometry(hairShape,{depth:.13,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:.012,bevelThickness:.015}),darkHair);
-   hairMesh.position.z=.205;hairMesh.castShadow=true;head.add(hairMesh);
-   // Side locks frame the temples and sit behind the glasses.
-   const sideL=cube(head,-.355,-.02,.12,.075,.27,.19,darkHair);sideL.rotation.z=-.04;
-   const sideR=cube(head,.355,-.015,.12,.07,.24,.18,darkHair);sideR.rotation.z=.05;
-   // Layered angular strands sweep from the part across the forehead.
-   const strand=(x,y,z,sx,sy,sz,rz,color)=>{const p=cube(head,x,y,z,sx,sy,sz,color);p.rotation.z=rz;p.rotation.y=rz*.2;return p;};
-   strand(-.19,.285,.35,.22,.095,.055,-.35,midHair);
-   strand(-.045,.255,.36,.23,.09,.055,-.12,darkHair);
-   strand(.12,.235,.355,.20,.08,.05,.16,midHair);
-   strand(.235,.255,.33,.13,.08,.05,.28,darkHair);
-   // Thin, aligned rectangular glasses, visible pupils, a restrained nose and mouth.
+   // Layered hair mass shaped as a custom extruded polygon. The uneven lower edge forms a side-swept fringe.
+   const outline=new T.Shape();
+   outline.moveTo(-.39,.02);outline.lineTo(-.40,.27);outline.lineTo(-.32,.43);
+   outline.lineTo(-.22,.49);outline.lineTo(-.08,.52);outline.lineTo(.08,.51);
+   outline.lineTo(.24,.46);outline.lineTo(.36,.35);outline.lineTo(.38,.20);
+   outline.lineTo(.34,.15);outline.lineTo(.27,.18);outline.lineTo(.20,.11);
+   outline.lineTo(.12,.18);outline.lineTo(.04,.14);outline.lineTo(-.04,.21);
+   outline.lineTo(-.13,.16);outline.lineTo(-.22,.23);outline.lineTo(-.30,.16);
+   outline.lineTo(-.36,.20);outline.closePath();
+   const hairMesh=new T.Mesh(new T.ExtrudeGeometry(outline,{depth:.15,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:.012,bevelThickness:.012}),darkHair);
+   hairMesh.position.set(0,0,.205);hairMesh.castShadow=true;head.add(hairMesh);
+   // Small angular highlights follow the direction of the hairstyle.
+   const strand=(x,y,z,sx,sy,sz,rz,color)=>{const p=cube(head,x,y,z,sx,sy,sz,color);p.rotation.z=rz;p.rotation.y=rz*.18;return p;};
+   strand(-.22,.36,.365,.22,.10,.045,-.30,hairMid);
+   strand(-.05,.39,.37,.23,.09,.045,-.10,darkHair);
+   strand(.13,.35,.36,.21,.085,.045,.20,hairLight);
+   // Side locks frame the temples without covering the glasses.
+   strand(-.365,-.04,.12,.065,.25,.16,-.04,darkHair);
+   strand(.36,-.035,.12,.06,.22,.15,.04,darkHair);
+   // Face details aligned to the face plane: thin rectangular glasses, pupils, nose and mouth.
    const frame=mat(0x151515,.25,.15);
    for(const side of [-1,1]){
      cube(head,side*.145,.055,.355,.22,.022,.025,frame);
