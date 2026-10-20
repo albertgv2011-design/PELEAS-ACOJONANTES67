@@ -167,11 +167,17 @@ body.in-fight #fight3d-fallback{inset:0}
  // Legs with independently animated pivots.
  const pants=mat(colors.pants||colors.suit);const legs=[],knees=[];for(let side of [-1,1]){const hip=new T.Group();hip.position.set(side*.27,1.15,0);body.add(hip);if(id==='puigdemont'){cube(hip,0,-.25,0,.3,.52,.38,pants);const knee=new T.Group();knee.position.set(0,-.50,0);hip.add(knee);cube(knee,0,-.24,0,.29,.50,.37,pants);cube(knee,0,-.51,.12,.32,.18,.5,shoe);knees.push(knee);}else{cube(hip,0,-.38,0,.3,.8,.38,pants).position.y=-.36;cube(hip,0,-.86,.12,.32,.18,.5,shoe);knees.push(null);}legs.push(hip);}
  cube(body,0,1.72,0,.9,1.15,.48,suit);
- // Shirt opening, tie and angular jacket lapels make each formal outfit readable.
- cube(body,0,1.91,.252,.36,.7,.035,shirt);cube(body,0,1.78,.28,.12,.65,.045,tie);
- const lapelMat=mat((id==='puigdemont'||id==='orriols')?0x29272b:0x202b40);
- const lapelL=cube(body,-.23,2.02,.285,.18,.43,.045,lapelMat);lapelL.rotation.z=-.28;
- const lapelR=cube(body,.23,2.02,.285,.18,.43,.045,lapelMat);lapelR.rotation.z=.28;
+ // Avoid overlapping coplanar layers on Puigdemont's chest; they caused visible z-fighting.
+ if(id==='puigdemont'){
+   cube(body,0,1.91,.265,.34,.70,.045,shirt);
+   cube(body,0,1.78,.305,.14,.56,.05,tie);
+ }else{
+   // Shirt opening, tie and angular jacket lapels for the other fighters.
+   cube(body,0,1.91,.252,.36,.7,.035,shirt);cube(body,0,1.78,.28,.12,.65,.045,tie);
+   const lapelMat=mat(id==='orriols'?0x29272b:0x202b40);
+   const lapelL=cube(body,-.23,2.02,.285,.18,.43,.045,lapelMat);lapelL.rotation.z=-.28;
+   const lapelR=cube(body,.23,2.02,.285,.18,.43,.045,lapelMat);lapelR.rotation.z=.28;
+ }
  const neck=cube(body,0,2.4,0,.2,.23,.2,skin);
  const head=new T.Group();head.position.set(0,2.72,.02);body.add(head);
  const face=new T.Mesh(new T.BoxGeometry(.68,.78,.52),skin);face.castShadow=true;head.add(face);
@@ -186,21 +192,19 @@ body.in-fight #fight3d-fallback{inset:0}
  if(id==='puigdemont'){
    // Reference-matched voxel hairstyle: layered, swept dark locks and a fringe over the forehead.
    const darkHair=mat(0x302722),midHair=mat(0x40332d),hairHighlight=mat(0x514039);
-   haircap.material=darkHair;haircap.scale.set(1.02,.96,.94);haircap.position.set(-.025,.20,-.015);
-   // Side locks frame the face; staggered cubes create a deliberately sculpted hair silhouette.
+   haircap.material=darkHair;haircap.scale.set(.98,.86,.90);haircap.position.set(-.025,.22,-.015);
+   // Shorter layered locks create a softer, swept hairstyle without huge slabs over the glasses.
    const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=cube(head,x,y,z,sx,sy,sz,color);p.rotation.z=rz;return p;};
-   lock(-.32,.01,.12,.18,.42,.31,-.22,darkHair);
-   lock(.31,.00,.12,.17,.42,.31,.18,darkHair);
-   // Back and crown layers give the hair a fuller silhouette rather than one flat cap.
-   lock(-.22,.31,.015,.31,.22,.34,-.45,midHair);
-   lock(.02,.35,.025,.32,.22,.34,-.20,hairHighlight);
-   lock(.22,.30,.015,.30,.22,.34,.32,midHair);
-   lock(.30,.20,.06,.23,.24,.32,.48,darkHair);
-   // Swept fringe pieces hang over the forehead at different angles.
-   lock(-.19,.13,.292,.22,.25,.14,-.66,midHair);
-   lock(-.04,.10,.30,.21,.28,.14,-.34,darkHair);
-   lock(.11,.13,.30,.21,.25,.14,.28,midHair);
-   lock(.22,.17,.28,.18,.22,.13,.48,darkHair);
+   lock(-.31,.015,.12,.14,.34,.27,-.12,darkHair);
+   lock(.30,.015,.12,.14,.34,.27,.12,darkHair);
+   lock(-.22,.30,.015,.27,.17,.29,-.38,midHair);
+   lock(.00,.33,.025,.28,.17,.29,-.12,hairHighlight);
+   lock(.22,.29,.015,.27,.17,.29,.25,midHair);
+   lock(.29,.18,.06,.17,.19,.27,.32,darkHair);
+   // Fringe pieces sit above the eyebrows and leave both lenses unobstructed.
+   lock(-.18,.17,.286,.18,.17,.10,-.42,midHair);
+   lock(-.035,.145,.292,.17,.18,.10,-.18,darkHair);
+   lock(.105,.16,.286,.16,.16,.10,.18,midHair);
    // Square black glasses, clear bridge and visible skin inside both lenses.
    const frame=mat(0x151515,.25,.15);
    for(const side of [-1,1]){
@@ -253,24 +257,22 @@ body.in-fight #fight3d-fallback{inset:0}
  }else if(id==='puigdemont'){
    // Match the reference: black tailored jacket, crisp white shirt, deep blue tie, yellow ribbon.
    const lapel=mat(0x29282c),tieBlue=mat(0x26366f),gold=mat(0xffd21f),pocket=mat(0x201f23);
-   const leftLapel=cube(body,-.22,2.00,.305,.19,.49,.055,lapel);leftLapel.rotation.z=-.32;
-   const rightLapel=cube(body,.22,2.00,.305,.19,.49,.055,lapel);rightLapel.rotation.z=.32;
-   cube(body,0,1.90,.315,.32,.70,.045,shirt);
-   // Broader, cleaner tie and visible shirt collar.
-   cube(body,0,1.76,.355,.15,.52,.065,tieBlue);
-   cube(body,0,2.045,.355,.20,.14,.065,tieBlue);
-   cube(body,-.12,2.19,.31,.18,.13,.055,shirt);cube(body,.12,2.19,.31,.18,.13,.055,shirt);
-   // Defined jacket fronts, lapels and low pockets, matching the reference silhouette.
-   const frontL=cube(body,-.29,1.72,.275,.28,1.02,.055,lapel);frontL.rotation.z=-.025;
-   const frontR=cube(body,.29,1.72,.275,.28,1.02,.055,lapel);frontR.rotation.z=.025;
-   const leftEdge=cube(body,-.17,1.98,.315,.09,.55,.045,lapel);leftEdge.rotation.z=-.34;
-   const rightEdge=cube(body,.17,1.98,.315,.09,.55,.045,lapel);rightEdge.rotation.z=.34;
-   cube(body,-.28,1.30,.315,.22,.08,.035,pocket);cube(body,.28,1.30,.315,.22,.08,.035,pocket);
-   // Yellow ribbon as a recognisable loop with two angled tails.
-   const loop1=cube(body,.285,2.08,.39,.075,.13,.04,gold);loop1.rotation.z=-.58;
-   const loop2=cube(body,.345,2.08,.392,.075,.13,.04,gold);loop2.rotation.z=.58;
-   const tail1=cube(body,.29,1.98,.395,.065,.15,.04,gold);tail1.rotation.z=.38;
-   const tail2=cube(body,.35,1.98,.397,.065,.15,.04,gold);tail2.rotation.z=-.38;
+   // Shirt and tie sit behind the jacket edges with small depth offsets to prevent flicker.
+   cube(body,0,1.88,.305,.30,.70,.035,shirt);
+   cube(body,0,1.76,.335,.14,.52,.045,tieBlue);
+   cube(body,0,2.045,.337,.18,.13,.045,tieBlue);
+   cube(body,-.12,2.19,.30,.17,.12,.04,shirt);cube(body,.12,2.19,.30,.17,.12,.04,shirt);
+   // One clean jacket silhouette, avoiding duplicate lapels and overlapping shirt panels.
+   const frontL=cube(body,-.28,1.72,.315,.30,1.02,.055,lapel);frontL.rotation.z=-.025;
+   const frontR=cube(body,.28,1.72,.315,.30,1.02,.055,lapel);frontR.rotation.z=.025;
+   const leftEdge=cube(body,-.17,1.98,.35,.09,.48,.04,lapel);leftEdge.rotation.z=-.34;
+   const rightEdge=cube(body,.17,1.98,.35,.09,.48,.04,lapel);rightEdge.rotation.z=.34;
+   cube(body,-.28,1.30,.35,.22,.08,.035,pocket);cube(body,.28,1.30,.35,.22,.08,.035,pocket);
+   // Bright, compact awareness ribbon on the viewer-right lapel.
+   const loop1=cube(body,.285,2.08,.405,.065,.12,.035,gold);loop1.rotation.z=-.58;
+   const loop2=cube(body,.345,2.08,.407,.065,.12,.035,gold);loop2.rotation.z=.58;
+   const tail1=cube(body,.29,1.98,.41,.055,.13,.035,gold);tail1.rotation.z=.38;
+   const tail2=cube(body,.35,1.98,.412,.055,.13,.035,gold);tail2.rotation.z=-.38;
  }
  cape(body,colors.cape||0x9b1b2d,kind);
  // Stand with a readable fighting pose.
