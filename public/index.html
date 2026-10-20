@@ -183,7 +183,13 @@ body.in-fight #fight3d-fallback{inset:0}
  const haircap=new T.Mesh(new T.BoxGeometry(.78,.5,.7),hair);haircap.scale.set(.85,1.15,.8);haircap.position.y=.20;haircap.castShadow=true;head.add(haircap);
  const nose=cube(head,0,-.02,.31,.12,.15,.14,skin);
  // Blocky ears and brows make the face readable at fighting-camera distance.
- for(let side of [-1,1]){cube(head,side*.345,-.015,.015,.10,.20,.16,skin);cube(head,side*.14,.135,.292,.105,.045,.045,mat(id==='abascal'?0x302923:0x211b20));cube(head,side*.14,.055,.285,.085,.055,.035,mat(0x17131a));}
+ for(let side of [-1,1]){
+   cube(head,side*.345,-.015,.015,.10,.20,.16,skin);
+   const browWidth=id==='puigdemont'?.095:.105,browHeight=id==='puigdemont'?.027:.045;
+   const brow=cube(head,side*.14,.135,.292,browWidth,browHeight,.045,mat(id==='abascal'?0x302923:0x211b20));
+   if(id==='puigdemont')brow.rotation.z=side*.10;
+   cube(head,side*.14,.055,.285,.085,.055,.035,mat(0x17131a));
+ }
  // POLITICIAN SKINS: recognizable hair, beard and glasses on the existing head;
  // the original torso, limbs, pivots and combat animation rig remain unchanged.
  const oval=(parent,x,y,z,sx,sy,sz,color)=>{const m=new T.Mesh(new T.BoxGeometry(1,1,1),mat(color));m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;parent.add(m);return m;};
@@ -193,19 +199,21 @@ body.in-fight #fight3d-fallback{inset:0}
    const darkHair=mat(0x302722),midHair=mat(0x40332d),hairHighlight=mat(0x44352e);
    // Replace round-looking clumps with layered angular locks, closer to the supplied sculpted hairstyle.
    // Smaller raised cap exposes the forehead and gives the hair a natural, sculpted outline.
-   haircap.material=darkHair;haircap.scale.set(.94,.46,.82);haircap.position.set(-.025,.45,-.035);
+   // Rounded skull cap gives a curved silhouette instead of a flat rectangular helmet.
+   haircap.geometry.dispose();haircap.geometry=new T.SphereGeometry(1,10,7);
+   haircap.material=darkHair;haircap.scale.set(.48,.49,.43);haircap.position.set(-.025,.39,-.035);
    const lock=(x,y,z,sx,sy,sz,rz,color)=>{const p=cube(head,x,y,z,sx,sy,sz,color);p.rotation.z=rz;p.rotation.y=rz*.25;return p;};
    // Layered crown follows a side part; use several narrow angled locks rather than a flat slab.
-   lock(-.23,.39,.02,.30,.14,.25,-.28,midHair);
-   lock(-.03,.42,.025,.29,.14,.26,-.08,darkHair);
-   lock(.17,.39,.02,.27,.13,.24,.22,midHair);
-   lock(.29,.27,.055,.12,.22,.20,.18,darkHair);
-   lock(-.32,.035,.08,.10,.25,.18,-.10,darkHair);
-   lock(.31,.035,.08,.10,.25,.18,.10,darkHair);
-   // Three narrow diagonal fringe locks, sitting just above the glasses instead of across the lenses.
-   lock(-.17,.235,.285,.19,.075,.065,-.40,midHair);
-   lock(.015,.22,.29,.19,.075,.065,-.16,darkHair);
-   lock(.17,.235,.285,.16,.07,.06,.18,midHair);
+   lock(-.23,.40,.015,.29,.13,.23,-.30,midHair);
+   lock(-.04,.43,.025,.27,.13,.24,-.10,darkHair);
+   lock(.15,.40,.015,.25,.12,.22,.22,midHair);
+   lock(.27,.30,.045,.12,.20,.20,.18,darkHair);
+   lock(-.32,.045,.08,.10,.25,.18,-.10,darkHair);
+   lock(.30,.045,.08,.10,.25,.18,.10,darkHair);
+   // Short stepped diagonal fringe with clear space above the glasses.
+   lock(-.19,.24,.285,.18,.095,.065,-.38,midHair);
+   lock(-.025,.22,.29,.17,.085,.065,-.12,darkHair);
+   lock(.13,.24,.285,.15,.075,.06,.18,midHair);
    // Square black glasses, clear bridge and visible skin inside both lenses.
    const frame=mat(0x151515,.25,.15);
    for(const side of [-1,1]){
